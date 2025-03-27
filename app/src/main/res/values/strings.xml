@@ -1,0 +1,10 @@
+<resources>
+    <!-- aqui se muestran los titulos de la app (parte superior) -->
+    <string name="app_name">EggStatV1</string>
+    <string name="title_home">Home</string>
+    <string name="title_gallinas">Gallinas</string>
+    <string name="title_huevos">Huevos</string>
+    <string name="title_estancias">Estancias</string>
+    <string name="title_estadisticas">Estadísticas</string>
+</resources>
+

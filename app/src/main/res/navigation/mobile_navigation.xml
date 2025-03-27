@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <!-- aquí se declaran todos los fragments, y se cargan dentro del NavHostFragment de ActivityMain.xml -->
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="theteachercelia.eggstatv1.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_gallinas"
+        android:name="theteachercelia.eggstatv1.ui.gallinas.GallinasFragment"
+        android:label="@string/title_gallinas"
+        tools:layout="@layout/fragment_gallinas" />
+
+    <fragment
+        android:id="@+id/navigation_huevos"
+        android:name="theteachercelia.eggstatv1.ui.huevos.HuevosFragment"
+        android:label="@string/title_huevos"
+        tools:layout="@layout/fragment_huevos" />
+
+    <fragment
+        android:id="@+id/navigation_estancias"
+        android:name="theteachercelia.eggstatv1.ui.estancias.EstanciasFragment"
+        android:label="@string/title_estancias"
+        tools:layout="@layout/fragment_estancias" />
+
+    <fragment
+        android:id="@+id/navigation_estadisticas"
+        android:name="theteachercelia.eggstatv1.ui.estadisticas.EstadisticasFragment"
+        android:label="@string/title_estadisticas"
+        tools:layout="@layout/fragment_estadisticas" />
+
+
+</navigation>

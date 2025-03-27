@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- aquí definimos los botones del menu inferior -->
+    <!-- el ID de cada item debe coincidir con el ID del fragment de mobile_navigation para que el BOTON funcione -->
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_gallinas"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_gallinas" />
+
+    <item
+        android:id="@+id/navigation_huevos"
+        android:icon="@drawable/ic_notifications_black_24dp"
+        android:title="@string/title_huevos" />
+
+    <item
+        android:id="@+id/navigation_estancias"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/title_estancias" />
+
+    <item
+        android:id="@+id/navigation_estadisticas"
+        android:icon="@android:drawable/stat_notify_sync"
+        android:title="@string/title_estadisticas" />
+
+</menu>
