@@ -15,7 +15,25 @@ class LoginActivity : AppCompatActivity() {
     //private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //TODO: conectar FireBase
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        // --- ACTIVITY EN MODO PRUEBAS --- //
+
+        val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
+        val botonPruebas = findViewById<Button>(R.id.btn_Pruebas)
+
+        botonLogin.setOnClickListener {
+            Toast.makeText(this, "Aquí irá el login real", Toast.LENGTH_SHORT).show()
+            // configurar aqui firebase tras pruebas
+        }
+
+        botonPruebas.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+
         /*
         // Si el usuario ya está logueado → ir a MainActivity
         auth = FirebaseAuth.getInstance()
@@ -54,20 +72,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
          */
-        setContentView(R.layout.activity_login)
 
-        val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
-        val botonPruebas = findViewById<Button>(R.id.btn_Pruebas)
-
-        botonLogin.setOnClickListener {
-            Toast.makeText(this, "Aquí irá el login real", Toast.LENGTH_SHORT).show()
-            // configurar aqui firebase tras pruebas
-        }
-
-        botonPruebas.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
 
     }
 }

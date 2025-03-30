@@ -36,5 +36,11 @@
         android:label="@string/title_estadisticas"
         tools:layout="@layout/fragment_estadisticas" />
 
+    <fragment
+        android:id="@+id/home_control"
+        android:name="theteachercelia.eggstatv1.ui.control.ControlFragment"
+        android:label="@string/title_control"
+        tools:layout="@layout/fragment_control" />
+
 
 </navigation>

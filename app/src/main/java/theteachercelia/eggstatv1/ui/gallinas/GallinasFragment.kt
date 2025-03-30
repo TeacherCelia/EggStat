@@ -28,11 +28,18 @@ class GallinasFragment : Fragment() {
         _binding = FragmentGallinasBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // grid
+
+        /*
         val textView: TextView = binding.textDashboard
         gallinasViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+         */
         return root
+
+
     }
 
     override fun onDestroyView() {

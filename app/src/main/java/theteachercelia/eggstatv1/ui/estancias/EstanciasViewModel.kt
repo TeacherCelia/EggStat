@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class EstanciasViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+
     private val _text = MutableLiveData<String>().apply {
         value = "Esta será la pantalla las estancias, donde se podrán registrar cambios"
     }

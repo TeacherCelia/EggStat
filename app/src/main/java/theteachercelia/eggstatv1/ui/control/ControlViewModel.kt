@@ -1,14 +1,12 @@
-package theteachercelia.eggstatv1.ui.estadisticas
+package theteachercelia.eggstatv1.ui.control
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class EstadisticasViewModel : ViewModel() {
-
+class ControlViewModel : ViewModel() {
     private val _text = MutableLiveData<String>().apply {
-        value = "Aqui aparecerán estadísticas en tiempo real de puntos, huevos, etc..."
+        value = "Aquí apareceran los botones de control que solo los profesores podrán usar"
     }
     val text: LiveData<String> = _text
-
 }
