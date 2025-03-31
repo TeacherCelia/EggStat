@@ -8,7 +8,7 @@
 
     <EditText
         android:id="@+id/edtxt_email"
-        android:hint="e-mail"
+        android:hint="e-mail / usuario"
         android:inputType="textEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -28,6 +28,26 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp" />
 
+    <TextView
+        android:id="@+id/txtOlvidasteContrasena"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿Olvidaste tu contraseña?"
+        android:textColor="@color/purple_700"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <Button
+        android:id="@+id/btn_CrearProfesor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#4CAF50"
+        android:text="Crear cuenta profesor" />
+
     <Button
         android:id="@+id/btn_Pruebas"
         android:layout_width="match_parent"
@@ -37,13 +57,3 @@
         android:text="Entrar sin login (modo pruebas)" />
 
 </LinearLayout>
-
-    <!-- <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".LoginActivity">
-
-    </androidx.constraintlayout.widget.ConstraintLayout> -->

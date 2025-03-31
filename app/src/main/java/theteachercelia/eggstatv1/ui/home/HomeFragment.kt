@@ -1,5 +1,6 @@
 package theteachercelia.eggstatv1.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -11,11 +12,14 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
+import theteachercelia.eggstatv1.LoginActivity
 import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
+    //usamos binding para no tener que utilizar el findviewbyid
     private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
@@ -50,6 +54,7 @@ class HomeFragment : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
+        // "inflamos" el layout
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -57,6 +62,16 @@ class HomeFragment : Fragment() {
         binding.txtSaludoUsuario.text = "¡Hola, Celia!"
         binding.txtSaludoUsuario.text = "Tienes 0 puntos"
         binding.txtPuntosEquipo.text = "Tu equipo tiene 0 puntos"
+
+        binding.btnLogOut.setOnClickListener {
+            // cerramos sesión en FirebaseAuth
+            FirebaseAuth.getInstance().signOut()
+
+            // volvemos a loginactivity
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            startActivity(intent)
+            requireActivity().finish() // evitamos que el usuaro pueda volver con el boton atras
+        }
 
         return root
     }

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_home"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
     tools:context=".ui.home.HomeFragment">
 
     <TextView
@@ -12,12 +15,7 @@
         android:layout_height="wrap_content"
         android:text="Hola, usuario!"
         android:textSize="30sp"
-        app:layout_constraintBottom_toTopOf="@+id/txt_puntosUsuario"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.506"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.839" />
+        android:layout_marginBottom="16dp" />
 
     <TextView
         android:id="@+id/txt_puntosUsuario"
@@ -25,11 +23,7 @@
         android:layout_height="wrap_content"
         android:text="Tienes X puntos"
         android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@+id/txt_puntosEquipo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.881" />
+        android:layout_marginBottom="16dp" />
 
     <TextView
         android:id="@+id/txt_puntosEquipo"
@@ -37,9 +31,12 @@
         android:layout_height="wrap_content"
         android:text="Tu equipo tiene Y puntos"
         android:textSize="25sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.595" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btnLogOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cerrar Sesión" />
+
+</LinearLayout>
