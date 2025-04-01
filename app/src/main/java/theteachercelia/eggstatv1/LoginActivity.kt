@@ -6,12 +6,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
 import android.app.AlertDialog
-import android.graphics.Color
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.TextView
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
@@ -34,7 +33,6 @@ class LoginActivity : AppCompatActivity() {
         // referenciamos los componentes
         val emailEntradaTxt = findViewById<EditText>(R.id.edtxt_email)
         val passwordEntradaTxt = findViewById<EditText>(R.id.edtxt_pass)
-        val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
 
         // Si el usuario ya está logueado va a MainActivity
         if (auth.currentUser != null) {
@@ -42,7 +40,6 @@ class LoginActivity : AppCompatActivity() {
             finish()
             return
         }
-
 
         val botonPruebas = findViewById<Button>(R.id.btn_Pruebas)
         botonPruebas.visibility = View.GONE
@@ -52,6 +49,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         // ----- boton de login ----- //
+        val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
         botonLogin.setOnClickListener {
             val input = emailEntradaTxt.text.toString().trim()
             val password = passwordEntradaTxt.text.toString()
@@ -81,7 +79,6 @@ class LoginActivity : AppCompatActivity() {
         // ----- olvidé contraseña
 
         val olvidePass = findViewById<TextView>(R.id.txtOlvidasteContrasena)
-
         olvidePass.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("¿Eres profe o alumno?")
@@ -137,64 +134,89 @@ class LoginActivity : AppCompatActivity() {
             val inputEmail = dialogView.findViewById<EditText>(R.id.edtxt_inputEmail)
             val inputUsuario = dialogView.findViewById<EditText>(R.id.edtxt_inputUsuario)
             val inputPassword = dialogView.findViewById<EditText>(R.id.edtxt_inputPassword)
-            val inputEquipo = dialogView.findViewById<EditText>(R.id.edtxt_inputEquipo)
+            val inputRepetirPass = dialogView.findViewById<EditText>(R.id.edtxt_inputRepetirPassword)
+            val spinnerEquipos = dialogView.findViewById<Spinner>(R.id.spinner_Equipo)
             val inputClaveSecreta = dialogView.findViewById<EditText>(R.id.edtxt_inputClaveSecreta)
 
-            AlertDialog.Builder(this) //crear dialog con los siguientes atributos
-                .setTitle("Registro de profesor")
-                .setView(dialogView)
-                .setPositiveButton("Crear") { _, _ ->
-                    val email = inputEmail.text.toString().trim() //añadimos trims para quitar espacios
-                    val usuario = inputUsuario.text.toString().trim()
-                    val password = inputPassword.text.toString()
-                    val equipo = inputEquipo.text.toString().trim()
-                    val clave = inputClaveSecreta.text.toString()
+            // para cargar los equipos en el spinner
+            val equiposRef = database.child("equipo")
+            val listaEquipos = mutableListOf("Selecciona un equipo")
 
-                    // nos aseguramos de que todos los campos estén rellenos
-                    if (email.isEmpty() || usuario.isEmpty() || password.isEmpty() || equipo.isEmpty() || clave.isEmpty()) {
-                        Toast.makeText(this, "¡¡Rellena todos los campos!!", Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
-
-                    //si esta no es la clave, no se crea profesor
-                    if (clave != "Pr0f3k3y") {
-                        Toast.makeText(this, "¡¡Clave incorrecta!! Jamás podrás adivinarla si no eres profe... ¡¡muajaja!!", Toast.LENGTH_SHORT).show()
-                        return@setPositiveButton
-                    }
-
-                    // ¡¡Crear cuenta en firebase con esos datos!!
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnSuccessListener { result ->
-                            val uid = result.user?.uid ?: return@addOnSuccessListener
-                            val nuevoProfesor = mapOf(
-                                "nombre_usuario" to usuario,
-                                "email" to email,
-                                "equipo_id" to equipo,
-                                "rol" to "profesor",
-                                "puntos_usuario" to 0
-                            )
-                            // mensajes al añadir un usuario a la BD (success y failure)
-                            database.child("usuarios").child(uid).setValue(nuevoProfesor)
-                                .addOnSuccessListener {
-                                    Toast.makeText(this, "¡¡Nuevo profe añadido!!", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(this, "Ha habido un error al añadir el profe a la BD... :(", Toast.LENGTH_SHORT).show()
-                                }
+            // cargar los equipos MENOS profesores
+            equiposRef.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()){ //para añadir a "selecciona un equipo" el resto de equipos que hay en firebase "equipo"
+                    for (equipoSnap in snapshot.children) {
+                        val nombreEquipo = equipoSnap.child("nombre_equipo").getValue(String::class.java)
+                        if (!nombreEquipo.isNullOrEmpty()) {
+                            listaEquipos.add(nombreEquipo)
                         }
-                        // si firebase no acepta el registro
-                        .addOnFailureListener {
-                            it.printStackTrace() // pruebas para ver en el LOG el error concreto
-                            Toast.makeText(this, "Error creando usuario: ${it.message}", Toast.LENGTH_LONG).show()
-                        }
-
+                    }
+                    // Adaptador y asignar al Spinner
+                    val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listaEquipos)
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerEquipos.adapter = adapter
                 }
-                .setNegativeButton("Cancelar", null)
-                .show()
+
+                AlertDialog.Builder(this) //crear dialog con los siguientes atributos
+                    .setTitle("Registro de profesor")
+                    .setView(dialogView)
+                    .setPositiveButton("Crear") { _, _ ->
+                        val email = inputEmail.text.toString().trim() //añadimos trims para quitar espacios
+                        val usuario = inputUsuario.text.toString().trim()
+                        val password = inputPassword.text.toString()
+                        val repetirPass = inputRepetirPass.text.toString().trim()
+                        val equipoSeleccionado = spinnerEquipos.selectedItem?.toString() ?: ""
+                        val clave = inputClaveSecreta.text.toString()
+
+                        // nos aseguramos de que todos los campos estén rellenos
+                        if (email.isEmpty() || usuario.isEmpty() || password.isEmpty() || repetirPass.isEmpty() || clave.isEmpty() || equipoSeleccionado == "Selecciona un equipo") {
+                            Toast.makeText(this, "¡¡Rellena todos los campos!!", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        if (password != repetirPass) {
+                            Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        //si esta no es la clave, no se crea profesor
+                        if (clave != "Pr0f3k3y") {
+                            Toast.makeText(this, "¡¡Clave incorrecta!! Jamás podrás adivinarla si no eres profe... ¡¡muajaja!!", Toast.LENGTH_SHORT).show()
+                            return@setPositiveButton
+                        }
+
+                        // crear cuenta en firebase con esos datos
+                        auth.createUserWithEmailAndPassword(email, password)
+                            .addOnSuccessListener { result ->
+                                val uid = result.user?.uid ?: return@addOnSuccessListener
+                                val nuevoProfesor = mapOf(
+                                    "nombre_usuario" to usuario,
+                                    "email" to email,
+                                    "equipo_id" to equipoSeleccionado,
+                                    "rol" to "profesor",
+                                    "puntos_usuario" to 0
+                                )
+                                // mensajes al añadir un usuario a la BD (success y failure)
+                                database.child("usuarios").child(uid).setValue(nuevoProfesor)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(this, "¡¡Nuevo profe añadido!!", Toast.LENGTH_SHORT).show()
+                                    }
+                                    .addOnFailureListener {
+                                        Toast.makeText(this, "Ha habido un error al añadir el profe a la BD... :(", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                            // si firebase no acepta el registro
+                            .addOnFailureListener {
+                                it.printStackTrace() // pruebas para ver en el LOG el error concreto
+                                Toast.makeText(this, "Error creando usuario: ${it.message}", Toast.LENGTH_LONG).show()
+                            }
+
+                    }
+                    .setNegativeButton("Cancelar", null)
+                    .show()
+            }
+
         }
-
-
-
 
     }
 }

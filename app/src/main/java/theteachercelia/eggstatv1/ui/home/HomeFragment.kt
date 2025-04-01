@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.LoginActivity
 import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.databinding.FragmentHomeBinding
@@ -21,10 +23,10 @@ class HomeFragment : Fragment() {
 
     //usamos binding para no tener que utilizar el findviewbyid
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+
+    // visualizamos el ViewModel
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,34 +36,56 @@ class HomeFragment : Fragment() {
 
         // ----------- creación del menú superior de configuracion ------------- //
 
-        // TODO: modificar para que solo los profesores puedan abrirlo
+        // instanciamos firebase auth y database
+        val auth = FirebaseAuth.getInstance()
+        val database = FirebaseDatabase.getInstance().reference
 
-        //creación del menu
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_home, menu)
-            }
+        // solo si es profesor, se visualiza el menu de control de arriba
+        val uid = auth.currentUser?.uid // para ello verificamos quien se logueó con el auth
 
-            // al seleccionarlo, vamos al fragmentcontrol
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.accion_abrirControl -> {
-                        findNavController().navigate(R.id.home_control) // fragment control desde el navigation controller
-                        true
-                    }
-                    else -> false
+        if (uid != null) {
+            database.child("usuarios").child(uid).child("rol").get().addOnSuccessListener { snapshot ->
+                val rol = snapshot.getValue(String::class.java)
+
+                if (rol == "profesor") { // solo si es profe, creamos el menu
+                    requireActivity().addMenuProvider(object : MenuProvider {
+                        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                            menuInflater.inflate(R.menu.menu_home, menu)
+                        }
+
+                        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                            return when (menuItem.itemId) {
+                                R.id.accion_abrirControl -> {
+                                    findNavController().navigate(R.id.home_control)
+                                    true
+                                }
+                                else -> false
+                            }
+                        }
+                    }, viewLifecycleOwner, Lifecycle.State.RESUMED)
                 }
             }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }
 
-        // "inflamos" el layout
+        // ***** OBSERVAMOS LOS LIVEDATA DEL HOMEVIEWMODEL ***** //
+
+        // indicamos la raíz de los datos que visualizaremos
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
 
-        // TODO: PRUEBA- cambiar al hacer la app funcional
-        binding.txtSaludoUsuario.text = "¡Hola, Celia!"
-        binding.txtSaludoUsuario.text = "Tienes 0 puntos"
-        binding.txtPuntosEquipo.text = "Tu equipo tiene 0 puntos"
+        // observadores
+        viewModel.nombreUsuario.observe(viewLifecycleOwner) { nombre ->
+            binding.txtSaludoUsuario.text = "¡Hola, $nombre!"
+        }
+
+        viewModel.puntosUsuario.observe(viewLifecycleOwner) { puntos ->
+            binding.txtPuntosUsuario.text = "Tienes $puntos puntos"
+        }
+
+        viewModel.puntosEquipo.observe(viewLifecycleOwner) { puntosEquipo ->
+            binding.txtPuntosEquipo.text = "Tu equipo tiene $puntosEquipo puntos"
+        }
 
         binding.btnLogOut.setOnClickListener {
             // cerramos sesión en FirebaseAuth

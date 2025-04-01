@@ -7,21 +7,19 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import theteachercelia.eggstatv1.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        //creamos la vista de la activity
+        setContentView(R.layout.activity_main)
 
-        val navView: BottomNavigationView = binding.navView
-
+        //instanciamos los dos widgets que usaremos: navigationview con su navcontroller
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
+
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(
