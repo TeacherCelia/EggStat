@@ -14,6 +14,8 @@ import android.widget.EditText
 import android.widget.Spinner
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import theteachercelia.eggstatv1.bd.Equipo
+import theteachercelia.eggstatv1.bd.Usuario
 
 class ControlFragment : Fragment() {
 
@@ -92,13 +94,15 @@ class ControlFragment : Fragment() {
                         auth.createUserWithEmailAndPassword(emailFake, password)
                             .addOnSuccessListener { result ->
                                 val uid = result.user?.uid ?: return@addOnSuccessListener
-                                val nuevoUsuario = mapOf(
-                                    "nombre_usuario" to usuario,
-                                    "rol" to "alumno",
-                                    "equipo_id" to equipoSeleccionado,
-                                    "puntos_usuario" to 0,
-                                    "email" to emailFake
+                                // creamos un nuevo objeto usuario con esos atributos
+                                val nuevoUsuario = Usuario(
+                                    nombre_usuario = usuario,
+                                    rol = "alumno",
+                                    equipo_id = equipoSeleccionado,
+                                    puntos_usuario = 0,
+                                    email = emailFake
                                 )
+
                                 database.child("usuarios").child(uid).setValue(nuevoUsuario)
                                     .addOnSuccessListener {
                                         Toast.makeText(context, "Usuario creado correctamente", Toast.LENGTH_SHORT).show()
@@ -151,9 +155,9 @@ class ControlFragment : Fragment() {
                         if (snapshot.exists()) {
                             Toast.makeText(context, "Ese equipo ya existe :(", Toast.LENGTH_SHORT).show()
                         } else {
-                            val nuevoEquipo = mapOf(
-                                "nombre_equipo" to equipo,
-                                "puntos_equipo" to 0
+                            val nuevoEquipo = Equipo(
+                                nombre_equipo = equipo,
+                                puntos_equipo = 0
                             )
                             equipoRef.child(nombreEquipoMinus).setValue(nuevoEquipo)
                                 .addOnSuccessListener {

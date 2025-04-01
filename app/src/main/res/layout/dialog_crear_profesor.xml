@@ -30,6 +30,7 @@
     <EditText
         android:id="@+id/edtxt_inputRepetirPassword"
         android:hint="Repite la contraseña"
+        android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp" />
@@ -43,7 +44,6 @@
     <EditText
         android:id="@+id/edtxt_inputClaveSecreta"
         android:hint="Clave secreta de profesor"
-        android:inputType="textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp" />

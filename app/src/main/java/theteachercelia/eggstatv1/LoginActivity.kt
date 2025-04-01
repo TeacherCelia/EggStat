@@ -13,6 +13,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import theteachercelia.eggstatv1.bd.Usuario
 
 class LoginActivity : AppCompatActivity() {
 
@@ -181,7 +182,7 @@ class LoginActivity : AppCompatActivity() {
 
                         //si esta no es la clave, no se crea profesor
                         if (clave != "Pr0f3k3y") {
-                            Toast.makeText(this, "¡¡Clave incorrecta!! Jamás podrás adivinarla si no eres profe... ¡¡muajaja!!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "¡¡Clave incorrecta!! Jamás podrás adivinarla si no eres profe... ¡¡muajaja!!", Toast.LENGTH_LONG).show()
                             return@setPositiveButton
                         }
 
@@ -189,12 +190,12 @@ class LoginActivity : AppCompatActivity() {
                         auth.createUserWithEmailAndPassword(email, password)
                             .addOnSuccessListener { result ->
                                 val uid = result.user?.uid ?: return@addOnSuccessListener
-                                val nuevoProfesor = mapOf(
-                                    "nombre_usuario" to usuario,
-                                    "email" to email,
-                                    "equipo_id" to equipoSeleccionado,
-                                    "rol" to "profesor",
-                                    "puntos_usuario" to 0
+                                val nuevoProfesor = Usuario(
+                                    nombre_usuario = usuario,
+                                    email = email,
+                                    equipo_id = equipoSeleccionado,
+                                    rol = "profesor",
+                                    puntos_usuario = 0
                                 )
                                 // mensajes al añadir un usuario a la BD (success y failure)
                                 database.child("usuarios").child(uid).setValue(nuevoProfesor)

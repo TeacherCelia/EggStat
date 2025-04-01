@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.LoginActivity
 import theteachercelia.eggstatv1.R
+import theteachercelia.eggstatv1.bd.Usuario
 import theteachercelia.eggstatv1.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
@@ -44,10 +45,9 @@ class HomeFragment : Fragment() {
         val uid = auth.currentUser?.uid // para ello verificamos quien se logueó con el auth
 
         if (uid != null) {
-            database.child("usuarios").child(uid).child("rol").get().addOnSuccessListener { snapshot ->
-                val rol = snapshot.getValue(String::class.java)
-
-                if (rol == "profesor") { // solo si es profe, creamos el menu
+            database.child("usuarios").child(uid).get().addOnSuccessListener { snapshot ->
+                val usuario = snapshot.getValue(Usuario::class.java)
+                if (usuario?.rol == "profesor") { // solo si es profe, creamos el menu
                     requireActivity().addMenuProvider(object : MenuProvider {
                         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                             menuInflater.inflate(R.menu.menu_home, menu)
