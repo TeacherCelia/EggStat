@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import theteachercelia.eggstatv1.databinding.FragmentEstadisticasBinding
 
 class EstadisticasFragment : Fragment() {
+    // TODO: quitar binding
 
     private var _binding: FragmentEstadisticasBinding? = null
 

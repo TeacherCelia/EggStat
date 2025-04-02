@@ -8,6 +8,8 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -18,15 +20,9 @@ import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.LoginActivity
 import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.bd.Usuario
-import theteachercelia.eggstatv1.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    //usamos binding para no tener que utilizar el findviewbyid
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
-
-    // visualizamos el ViewModel
     private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
@@ -34,6 +30,38 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
+        return inflater.inflate(R.layout.fragment_home,container,false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?){
+        super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+
+        //referencias a views
+        val txtSaludo = view.findViewById<TextView>(R.id.txt_saludoUsuario)
+        val txtPuntosUsuario = view.findViewById<TextView>(R.id.txt_puntosUsuario)
+        val txtPuntosEquipo = view.findViewById<TextView>(R.id.txt_puntosEquipo)
+        val btnLogout = view.findViewById<Button>(R.id.btnLogOut)
+
+        //observadores de la view
+        viewModel.nombreUsuario.observe(viewLifecycleOwner) { nombre ->
+            txtSaludo.text = "Hola, $nombre!"
+        }
+
+        viewModel.puntosUsuario.observe(viewLifecycleOwner) { puntos ->
+            txtPuntosUsuario.text = "Tienes $puntos puntos"
+        }
+
+        viewModel.puntosEquipo.observe(viewLifecycleOwner) { puntosEq ->
+            txtPuntosEquipo.text = "Tu equipo tiene $puntosEq puntos"
+        }
+
+        btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            requireActivity().finish()
+        }
 
         // ----------- creación del menú superior de configuracion ------------- //
 
@@ -66,42 +94,5 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
-        // ***** OBSERVAMOS LOS LIVEDATA DEL HOMEVIEWMODEL ***** //
-
-        // indicamos la raíz de los datos que visualizaremos
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-        viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-
-        // observadores
-        viewModel.nombreUsuario.observe(viewLifecycleOwner) { nombre ->
-            binding.txtSaludoUsuario.text = "¡Hola, $nombre!"
-        }
-
-        viewModel.puntosUsuario.observe(viewLifecycleOwner) { puntos ->
-            binding.txtPuntosUsuario.text = "Tienes $puntos puntos"
-        }
-
-        viewModel.puntosEquipo.observe(viewLifecycleOwner) { puntosEquipo ->
-            binding.txtPuntosEquipo.text = "Tu equipo tiene $puntosEquipo puntos"
-        }
-
-        binding.btnLogOut.setOnClickListener {
-            // cerramos sesión en FirebaseAuth
-            FirebaseAuth.getInstance().signOut()
-
-            // volvemos a loginactivity
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            startActivity(intent)
-            requireActivity().finish() // evitamos que el usuaro pueda volver con el boton atras
-        }
-
-        return root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

@@ -11,6 +11,7 @@ import theteachercelia.eggstatv1.databinding.FragmentEstanciasBinding
 
 class EstanciasFragment : Fragment() {
 
+    //TODO: quitar binding
     private var _binding: FragmentEstanciasBinding? = null
 
     private val binding get() = _binding!!

@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import theteachercelia.eggstatv1.bd.Equipo
+import theteachercelia.eggstatv1.bd.Usuario
 
 class HomeViewModel : ViewModel() {
 
@@ -33,22 +35,31 @@ class HomeViewModel : ViewModel() {
         val usuarioRef = database.child("usuarios").child(uid)
 
         usuarioRef.get().addOnSuccessListener { snapshot ->
-            val nombre = snapshot.child("nombre_usuario").getValue(String::class.java) ?: ""
-            val puntos = snapshot.child("puntos_usuario").getValue(Int::class.java) ?: 0
-            val equipoId = snapshot.child("equipo_id").getValue(String::class.java) ?: ""
+            val usuario = snapshot.getValue(Usuario::class.java)
 
-            // cargamos los datos de nombre y puntos
-            _nombreUsuario.value = nombre
-            _puntosUsuario.value = puntos
+            if (usuario != null) {
+                _nombreUsuario.value = usuario.nombre_usuario
+                _puntosUsuario.value = usuario.puntos_usuario
 
-            // **REL** para el equipo tenems que buscar en la base de datos la relación entre las entidades, y así sacamos los puntos de equipo
-            if (equipoId.isNotEmpty()) {
-                val equipoRef = database.child("equipo").child(equipoId.lowercase().replace("\\s+".toRegex(), ""))
-                equipoRef.child("puntos_equipo").get().addOnSuccessListener { equipoSnapshot ->
-                    val puntosEquipo = equipoSnapshot.getValue(Int::class.java) ?: 0
-                    _puntosEquipo.value = puntosEquipo
+                // obtenemos el id del equipo del usuario
+                val equipoID = usuario.equipo_id
+
+                // **REL** para el equipo tenems que buscar en la base de datos la relación entre las entidades, y así sacamos los puntos de equipo
+                if (!equipoID.isNullOrEmpty()) {
+                    //normalizador
+                    val equipoRef = database.child("equipo").child(equipoID.lowercase().replace("\\s+".toRegex(), ""))
+
+                    // leemos datos del equipo
+                    equipoRef.get().addOnSuccessListener { equipoSnapshot ->
+                        //convertimos snapshot en objeto equipo
+                        val puntosEquipo = equipoSnapshot.getValue(Equipo::class.java)
+
+                        // se actualizan los puntos
+                        _puntosEquipo.value = puntosEquipo?.puntos_equipo ?: 0
+                    }
                 }
             }
+
         }
     }
 }

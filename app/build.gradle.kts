@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.firebase.database) // dependencia de firebase
     implementation(libs.firebase.auth) //dependencia de firebase auth
+    implementation(libs.firebase.storage.ktx) // dependencia de firebase storage (imagenes)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

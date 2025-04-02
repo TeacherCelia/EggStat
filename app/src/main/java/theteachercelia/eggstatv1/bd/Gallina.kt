@@ -1,7 +1,6 @@
 package theteachercelia.eggstatv1.bd
 
 data class Gallina(
-    val id: String = "",
     val nombre_gallina: String = "",
     val raza: String = "",
     val edad: Int = 0,

@@ -8,13 +8,21 @@ import android.view.ViewGroup
 import android.widget.Toast
 import theteachercelia.eggstatv1.R
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import theteachercelia.eggstatv1.bd.Equipo
+import theteachercelia.eggstatv1.bd.Gallina
 import theteachercelia.eggstatv1.bd.Usuario
 
 class ControlFragment : Fragment() {
@@ -25,16 +33,32 @@ class ControlFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // "inflamos" la vista del fragment
-        val view = inflater.inflate(R.layout.fragment_control, container, false)
-        return view
+        return inflater.inflate(R.layout.fragment_control, container, false)
     }
+
+    // para usar activityResultLauncher (imagenes)
+    private lateinit var seleccionarImagenLauncher: ActivityResultLauncher<Intent>
+    private var imagenUriSeleccionada: Uri?= null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // instanciamos firebase auth y firebase database
-        val auth = FirebaseAuth.getInstance()
-        val database = FirebaseDatabase.getInstance().reference
+        // instanciamos firebase auth, firebase database y firebase storage
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val firebaseDatabase = FirebaseDatabase.getInstance().reference
+        val firebaseStorage = FirebaseStorage.getInstance().reference
+
+        // registramos el launcher de imagenes
+        seleccionarImagenLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == AppCompatActivity.RESULT_OK) {
+                imagenUriSeleccionada = result.data?.data
+                Toast.makeText(context, "Imagen seleccionada", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         /********************
         boton agregar usuario
@@ -51,7 +75,7 @@ class ControlFragment : Fragment() {
             val inputRepetirPass = dialogView.findViewById<EditText>(R.id.edtxt_RepetirContrasena)
             val spinnerEquipos = dialogView.findViewById<Spinner>(R.id.spinner_Equipo)
 
-            val equiposRef = database.child("equipo")
+            val equiposRef = firebaseDatabase.child("equipo")
             val listaEquipos = mutableListOf("Selecciona un equipo") //***
 
             // cargar los equipos MENOS profesores
@@ -67,6 +91,10 @@ class ControlFragment : Fragment() {
                     val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, listaEquipos)
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spinnerEquipos.adapter = adapter
+
+                    // para resetear imagen después de guardar
+                    imagenUriSeleccionada = null
+
                 }
 
                 //alertdialog con las opciones para introducir el alumno
@@ -91,7 +119,7 @@ class ControlFragment : Fragment() {
 
                         val emailFake = "$usuario@eggstat.com"
 
-                        auth.createUserWithEmailAndPassword(emailFake, password)
+                        firebaseAuth.createUserWithEmailAndPassword(emailFake, password)
                             .addOnSuccessListener { result ->
                                 val uid = result.user?.uid ?: return@addOnSuccessListener
                                 // creamos un nuevo objeto usuario con esos atributos
@@ -103,7 +131,7 @@ class ControlFragment : Fragment() {
                                     email = emailFake
                                 )
 
-                                database.child("usuarios").child(uid).setValue(nuevoUsuario)
+                                firebaseDatabase.child("usuarios").child(uid).setValue(nuevoUsuario)
                                     .addOnSuccessListener {
                                         Toast.makeText(context, "Usuario creado correctamente", Toast.LENGTH_SHORT).show()
                                     }
@@ -118,6 +146,8 @@ class ControlFragment : Fragment() {
                     }
                     .setNegativeButton("Cancelar", null)
                     .show()
+
+
             }
         }
 
@@ -148,7 +178,7 @@ class ControlFragment : Fragment() {
                     // funcionalidad para no repetir equipos
                     val nombreEquipoMinus = equipo.lowercase().replace("\\s+".toRegex(), "")
 
-                    val equipoRef = database.child("equipo")
+                    val equipoRef = firebaseDatabase.child("equipo")
 
                     // si existe, salta el TOAST, si no existe, se crea
                     equipoRef.child(nombreEquipoMinus).get().addOnSuccessListener { snapshot ->
@@ -178,9 +208,97 @@ class ControlFragment : Fragment() {
         /********************
         boton agregar gallina
          ********************/
-        // TODO: implementar funcionalidad boton agregar gallina
+
         view.findViewById<Button>(R.id.btnAgregarGallina).setOnClickListener {
-            Toast.makeText(requireContext(), "Aquí se añadirá una gallina", Toast.LENGTH_SHORT).show()
+            // creamos la view con el dialogview
+            val context = requireContext()
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_agregar_gallina, null)
+
+            // identificamos todos los componentes
+            val inputNombre = dialogView.findViewById<EditText>(R.id.edtxt_nombreGallina)
+            val inputRaza = dialogView.findViewById<EditText>(R.id.edtxt_razaGallina)
+            val inputEdad = dialogView.findViewById<EditText>(R.id.edtxt_edadGallina)
+            val inputTotalHuevos = dialogView.findViewById<EditText>(R.id.edtxt_totalHuevos)
+            val btnSeleccionarFoto = dialogView.findViewById<Button>(R.id.btn_seleccionarFoto)
+
+            /********************************
+            boton seleccionar foto de gallina
+             ********************************/
+
+
+            btnSeleccionarFoto.setOnClickListener {
+                val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    type = "image/*"
+                }
+                seleccionarImagenLauncher.launch(intent)
+            }
+
+            AlertDialog.Builder(context)
+                .setTitle("Registrar gallina")
+                .setView(dialogView)
+                .setPositiveButton("Crear") { _, _ ->
+                    val nombreGallina = inputNombre.text.toString().trim()
+                    val raza = inputRaza.text.toString().trim()
+                    val edadGallina = inputEdad.text.toString().trim()
+                    val huevosGallina = inputTotalHuevos.text.toString().trim()
+
+                    if (nombreGallina.isEmpty() || raza.isEmpty() || edadGallina.isEmpty() || huevosGallina.isEmpty()) {
+                        Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+
+                    // pasamos los strings de los inputs a int
+                    val edad = edadGallina.toIntOrNull()
+                    val huevos = huevosGallina.toIntOrNull()
+
+                    if (edad == null || huevos == null) {
+                        Toast.makeText(context, "¡¡Edad y huevos deben ser números!!", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+
+                    if (imagenUriSeleccionada == null) {
+                        Toast.makeText(context, "Debes seleccionar una imagen", Toast.LENGTH_SHORT).show()
+                        return@setPositiveButton
+                    }
+
+                    // ---SUbir imagen a firebase storage
+                    val nombreArchivo = "gallinas/${System.currentTimeMillis()}_${nombreGallina}.jpg"
+                    val imagenRef = FirebaseStorage.getInstance().reference.child(nombreArchivo)
+
+                    imagenUriSeleccionada?.let { uri ->
+                        imagenRef.putFile(uri)
+                            .addOnSuccessListener {
+                                // obtener la URL de descarga
+                                imagenRef.downloadUrl.addOnSuccessListener { url ->
+                                    val nuevaGallina = Gallina(
+                                        nombre_gallina = nombreGallina,
+                                        raza = raza,
+                                        edad = edad,
+                                        total_huevos = huevos,
+                                        foto_url = url.toString()
+                                    )
+
+                                    // Guardamos la gallina en Realtime Database
+                                    val gallinasRef = FirebaseDatabase.getInstance().reference.child("gallinas")
+                                    gallinasRef.push().setValue(nuevaGallina)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(context, "¡¡Gallina añadida con éxito!!", Toast.LENGTH_LONG).show()
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(context, "Error al guardar la gallina", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Error al subir la imagen", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+
+
         }
 
 
