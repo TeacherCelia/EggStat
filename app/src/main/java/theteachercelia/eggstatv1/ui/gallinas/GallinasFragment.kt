@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import theteachercelia.eggstatv1.R
-import theteachercelia.eggstatv1.bd.Gallina
 
 class GallinasFragment : Fragment() {
 
@@ -32,13 +32,15 @@ class GallinasFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        //instanciamos viewmodel y el grid
+        //---- instancia del viewmodel
         viewModel = ViewModelProvider(this)[GallinasViewModel::class.java]
 
-        //referencias a views
+        //---- referencias a la view
         val gridLayout = view.findViewById<GridLayout>(R.id.gridGallinas)
 
-        //observadores del viewmodel
+        //---- observadores del viewmodel
+
+        // observador del grid
         viewModel.listaGallinas.observe(viewLifecycleOwner){ listagallinas ->
             gridLayout.removeAllViews()
 
@@ -46,16 +48,17 @@ class GallinasFragment : Fragment() {
                 val avatarview = layoutInflater.inflate(R.layout.avatar_gallina,gridLayout,false)
                 val imgGallina = avatarview.findViewById<ImageView>(R.id.img_Gallina)
                 val nombreGallina = avatarview.findViewById<TextView>(R.id.txt_NombreGallina)
+                val edadTexto = calcularEdad(gallina.fecha_nacimiento) //llamada a la funcion de calcular
 
+                // ponemos el nombre de gallina debajo
                 nombreGallina.text = gallina.nombre_gallina
 
                 avatarview.setOnClickListener {
                     AlertDialog.Builder(requireContext())
                         .setTitle(gallina.nombre_gallina)
                         .setMessage(
-                            "Raza: ${gallina.raza}\n" +
-                                    "Edad: ${gallina.edad} años\n" +
-                                    "Huevos: ${gallina.total_huevos} 🥚"
+                            "Raza: ${gallina.raza}\n" + "Edad: $edadTexto\n" +
+                                    "Huevos: ${gallina.total_huevos}"
                         )
                         .setPositiveButton("Cerrar", null)
                         .show()
@@ -70,15 +73,32 @@ class GallinasFragment : Fragment() {
             }
         }
 
-        //lógica UI (listeners, etc)
-
-
+        // observador del toast
+        viewModel.mensajeError.observe(viewLifecycleOwner) { mensaje ->
+            Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show()
+        }
 
 
     }
+    // ---- lógica UI (listeners, métodos, etc...)
+    private fun calcularEdad(fechaNacimiento: String): String {
+        return try {
+            val formatoFecha = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+            val fechaNac = formatoFecha.parse(fechaNacimiento)
+            val hoy = java.util.Calendar.getInstance()
+            val cumple = java.util.Calendar.getInstance()
+            cumple.time = fechaNac
 
+            var edad = hoy.get(java.util.Calendar.YEAR) - cumple.get(java.util.Calendar.YEAR)
 
+            if (hoy.get(java.util.Calendar.DAY_OF_YEAR) < cumple.get(java.util.Calendar.DAY_OF_YEAR)) {
+                edad-- // si aún no ha cumplido años este año
+            }
 
-
+            "$edad años"
+        } catch (e: Exception) {
+            "Edad desconocida"
+        }
+    }
 
 }

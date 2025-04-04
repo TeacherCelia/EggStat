@@ -1,26 +1,26 @@
 package theteachercelia.eggstatv1.ui.control
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import theteachercelia.eggstatv1.R
 import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.Firebase
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.bd.Equipo
 import theteachercelia.eggstatv1.bd.Gallina
 import theteachercelia.eggstatv1.bd.Usuario
@@ -48,6 +48,11 @@ class ControlFragment : Fragment() {
         val firebaseDatabase = FirebaseDatabase.getInstance().reference
         val firebaseStorage = FirebaseStorage.getInstance().reference
 
+        // referencias a lasviews de los botones
+        val btnAgregarUsuario = view.findViewById<Button>(R.id.btn_AgregarUsuario)
+        val btnAgregarEquipo = view.findViewById<Button>(R.id.btn_AgregarEquipo)
+        val btnAgregarGallina = view.findViewById<Button>(R.id.btn_AgregarGallina)
+
         // registramos el launcher de imagenes
         seleccionarImagenLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -64,7 +69,7 @@ class ControlFragment : Fragment() {
         boton agregar usuario
          ********************/
 
-        view.findViewById<Button>(R.id.btnAgregarUsuario).setOnClickListener {
+        btnAgregarUsuario.setOnClickListener {
             // usamos un dialogview para agregar usuarios
             val context = requireContext()
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_crear_usuario, null)
@@ -76,7 +81,7 @@ class ControlFragment : Fragment() {
             val spinnerEquipos = dialogView.findViewById<Spinner>(R.id.spinner_Equipo)
 
             val equiposRef = firebaseDatabase.child("equipo")
-            val listaEquipos = mutableListOf("Selecciona un equipo") //***
+            val listaEquipos = mutableListOf("Selecciona un equipo")
 
             // cargar los equipos MENOS profesores
             equiposRef.get().addOnSuccessListener { snapshot ->
@@ -117,6 +122,7 @@ class ControlFragment : Fragment() {
                             return@setPositiveButton
                         }
 
+                        //creo un email con el nombre de usuario para que Firebase me acepte el usuario
                         val emailFake = "$usuario@eggstat.com"
 
                         firebaseAuth.createUserWithEmailAndPassword(emailFake, password)
@@ -155,7 +161,7 @@ class ControlFragment : Fragment() {
         boton agregar equipo
          ******************/
 
-        view.findViewById<Button>(R.id.btnAgregarEquipo).setOnClickListener {
+        btnAgregarEquipo.setOnClickListener {
             val context = requireContext()
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_crear_equipo, null)
 
@@ -209,7 +215,7 @@ class ControlFragment : Fragment() {
         boton agregar gallina
          ********************/
 
-        view.findViewById<Button>(R.id.btnAgregarGallina).setOnClickListener {
+        btnAgregarGallina.setOnClickListener {
             // creamos la view con el dialogview
             val context = requireContext()
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_agregar_gallina, null)
@@ -217,14 +223,16 @@ class ControlFragment : Fragment() {
             // identificamos todos los componentes
             val inputNombre = dialogView.findViewById<EditText>(R.id.edtxt_nombreGallina)
             val inputRaza = dialogView.findViewById<EditText>(R.id.edtxt_razaGallina)
-            val inputEdad = dialogView.findViewById<EditText>(R.id.edtxt_edadGallina)
+            val inputFechaNacimiento = dialogView.findViewById<DatePicker>(R.id.dp_edadGallina)
             val inputTotalHuevos = dialogView.findViewById<EditText>(R.id.edtxt_totalHuevos)
             val btnSeleccionarFoto = dialogView.findViewById<Button>(R.id.btn_seleccionarFoto)
+
+            //evitar poder seleccionar fechas futuras
+            inputFechaNacimiento.maxDate = System.currentTimeMillis()
 
             /********************************
             boton seleccionar foto de gallina
              ********************************/
-
 
             btnSeleccionarFoto.setOnClickListener {
                 val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
@@ -239,20 +247,22 @@ class ControlFragment : Fragment() {
                 .setPositiveButton("Crear") { _, _ ->
                     val nombreGallina = inputNombre.text.toString().trim()
                     val raza = inputRaza.text.toString().trim()
-                    val edadGallina = inputEdad.text.toString().trim()
                     val huevosGallina = inputTotalHuevos.text.toString().trim()
+                    //referencias al datepicker
+                    val dia = inputFechaNacimiento.dayOfMonth
+                    val mes = inputFechaNacimiento.month +1
+                    val anio = inputFechaNacimiento.year
+                    val fechaNacimiento = String.format("%04d-%02d-%02d", anio, mes, dia)
 
-                    if (nombreGallina.isEmpty() || raza.isEmpty() || edadGallina.isEmpty() || huevosGallina.isEmpty()) {
+                    if (nombreGallina.isEmpty() || raza.isEmpty() || huevosGallina.isEmpty()) {
                         Toast.makeText(context, "Rellena todos los campos", Toast.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
 
                     // pasamos los strings de los inputs a int
-                    val edad = edadGallina.toIntOrNull()
                     val huevos = huevosGallina.toIntOrNull()
-
-                    if (edad == null || huevos == null) {
-                        Toast.makeText(context, "¡¡Edad y huevos deben ser números!!", Toast.LENGTH_SHORT).show()
+                    if (huevos == null) {
+                        Toast.makeText(context, "¡¡Los huevos deben ser un número!!", Toast.LENGTH_LONG).show()
                         return@setPositiveButton
                     }
 
@@ -263,24 +273,24 @@ class ControlFragment : Fragment() {
 
                     // ---SUbir imagen a firebase storage
                     val nombreArchivo = "gallinas/${System.currentTimeMillis()}_${nombreGallina}.jpg"
-                    val imagenRef = FirebaseStorage.getInstance().reference.child(nombreArchivo)
+                    val imagenGallina = firebaseStorage.child(nombreArchivo)
 
                     imagenUriSeleccionada?.let { uri ->
-                        imagenRef.putFile(uri)
+                        imagenGallina.putFile(uri)
                             .addOnSuccessListener {
                                 // obtener la URL de descarga
-                                imagenRef.downloadUrl.addOnSuccessListener { url ->
+                                imagenGallina.downloadUrl.addOnSuccessListener { url ->
                                     val nuevaGallina = Gallina(
                                         nombre_gallina = nombreGallina,
                                         raza = raza,
-                                        edad = edad,
+                                        fecha_nacimiento = fechaNacimiento,
                                         total_huevos = huevos,
                                         foto_url = url.toString()
                                     )
 
                                     // Guardamos la gallina en Realtime Database
-                                    val gallinasRef = FirebaseDatabase.getInstance().reference.child("gallinas")
-                                    gallinasRef.push().setValue(nuevaGallina)
+                                    val gallinaGuardada = firebaseDatabase.child("gallinas")
+                                    gallinaGuardada.push().setValue(nuevaGallina)
                                         .addOnSuccessListener {
                                             Toast.makeText(context, "¡¡Gallina añadida con éxito!!", Toast.LENGTH_LONG).show()
                                         }
@@ -300,7 +310,6 @@ class ControlFragment : Fragment() {
 
 
         }
-
 
     }
 

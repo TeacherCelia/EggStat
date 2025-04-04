@@ -10,7 +10,7 @@
     tools:context=".ui.control.ControlFragment">
 
     <Button
-        android:id="@+id/btnAgregarUsuario"
+        android:id="@+id/btn_AgregarUsuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crear Usuario"
@@ -18,14 +18,14 @@
 
 
     <Button
-        android:id="@+id/btnAgregarGallina"
+        android:id="@+id/btn_AgregarGallina"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Añadir Gallina"
         android:layout_marginBottom="24dp" />
 
     <Button
-        android:id="@+id/btnAgregarEquipo"
+        android:id="@+id/btn_AgregarEquipo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Añadir Equipo" />

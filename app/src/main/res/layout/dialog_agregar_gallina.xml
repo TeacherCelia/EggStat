@@ -18,13 +18,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"/>
 
-    <EditText
-        android:id="@+id/edtxt_edadGallina"
-        android:hint="Edad"
-        android:inputType="number"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"/>
+    <DatePicker
+        android:id="@+id/dp_edadGallina"
+        android:layout_width="243dp"
+        android:layout_height="265dp"
+        android:layout_marginTop="12dp"
+        android:maxDate="today"/>
 
     <EditText
         android:id="@+id/edtxt_totalHuevos"
