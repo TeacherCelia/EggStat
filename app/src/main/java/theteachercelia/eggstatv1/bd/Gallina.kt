@@ -1,7 +1,7 @@
 package theteachercelia.eggstatv1.bd
 
 data class Gallina(
-    val nombre_gallina: String = "",
+    val nombre_gallina: String = "", //ID
     val raza: String = "",
     val fecha_nacimiento: String = "",
     val total_huevos: Int = 0, // se irá sumando conforme los alumnos registren

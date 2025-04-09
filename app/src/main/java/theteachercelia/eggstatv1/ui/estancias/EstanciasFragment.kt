@@ -2,7 +2,6 @@ package theteachercelia.eggstatv1.ui.estancias
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.R
+import theteachercelia.eggstatv1.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -22,6 +22,10 @@ import java.util.Locale
 class EstanciasFragment : Fragment() {
 
     private lateinit var viewModel: EstanciasViewModel
+
+    // bd
+    val firebaseAuth = FirebaseAuth.getInstance()
+    val firebaseDB = FirebaseDatabase.getInstance().reference
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,9 +42,7 @@ class EstanciasFragment : Fragment() {
         // ---- instanciamos viewmodel
         viewModel = ViewModelProvider(this)[EstanciasViewModel::class.java]
 
-        // bd
-        val firebaseAuth = FirebaseAuth.getInstance()
-        val firebaseDB = FirebaseDatabase.getInstance().reference
+
 
         // ---- referencias a views
         // bebedero
@@ -94,60 +96,9 @@ class EstanciasFragment : Fragment() {
 
         // ---- lógica UI (listeners, etc)
 
-        /*************
-        BOTÓN BEBEDERO
-         *************/
         imgBebedero.setOnClickListener{
             //TODO: revisar
-            val context = requireContext()
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registro_bebedero, null)
-
-            val uid = firebaseAuth.currentUser?.uid ?: return@setOnClickListener
-            val nombreRef = firebaseDB.child("usuarios").child(uid).child("nombre_usuario")
-
-            nombreRef.get().addOnSuccessListener { snapshot ->
-                val nombreUsuario = snapshot.getValue(String::class.java) ?: "Usuario"
-                val txtUsuarioDialog = dialogView.findViewById<TextView>(R.id.txt_usuarioRegistroBebedero)
-                txtUsuarioDialog.text = "Hola, $nombreUsuario"
-
-                AlertDialog.Builder(context)
-                    .setTitle("Confirmar revisión")
-                    .setView(dialogView)
-                    .setPositiveButton("Confirmo") { _, _ ->
-                        // si se confirma, se cambian los datos de la BD
-                        val timestampActual = System.currentTimeMillis()
-                        val bebederoRef = firebaseDB.child("estancia").child("bebedero")
-                        val usuarioRef = firebaseDB.child("usuarios").child(uid)
-
-                        // cambiamos datos de la BD de bebedero
-                        bebederoRef.child("timestamp_ultima_revision").setValue(timestampActual)
-                        bebederoRef.child("ultimo_usuario").setValue(nombreUsuario)
-
-                        // sumamos puntos usuario
-                        usuarioRef.child("puntos_usuario").get().addOnSuccessListener { puntosSnap ->
-                            val puntosActuales = puntosSnap.getValue(Int::class.java) ?: 0
-                            usuarioRef.child("puntos_usuario").setValue(puntosActuales + 10)
-                        }
-
-                        // sumamos puntos equipo
-                        usuarioRef.child("equipo_id").get().addOnSuccessListener { equipoSnap ->
-                            // obtenemos id del equipo del usuario
-                            val equipoID = equipoSnap.getValue(String::class.java)?.lowercase()?.replace("\\s+".toRegex(), "")
-                            if (!equipoID.isNullOrEmpty()) {  //controlamos si es null
-                                val equipoRef = firebaseDB.child("equipo").child(equipoID)
-                                equipoRef.child("puntos_equipo").get().addOnSuccessListener { puntosEquipoSnap ->
-                                    val puntosEquipoActuales = puntosEquipoSnap.getValue(Int::class.java) ?: 0
-                                    equipoRef.child("puntos_equipo").setValue(puntosEquipoActuales + 10)
-                                }
-                            }
-                        }
-
-                        Toast.makeText(context, "¡¡Acabas de rellenar el bebedero!!", Toast.LENGTH_LONG).show()
-                    }
-                    .setNegativeButton("Cancelar", null)
-                    .show()
-
-            }
+            mostrarDialogRevisionEstancia("bebedero", 10)
         }
 
         /*************
@@ -155,6 +106,7 @@ class EstanciasFragment : Fragment() {
          *************/
         imgComedero.setOnClickListener{
             //TODO: implementar clic en imgcomedero
+            mostrarDialogRevisionEstancia("comedero", 10)
         }
 
         /*************
@@ -162,14 +114,14 @@ class EstanciasFragment : Fragment() {
          *************/
         imgGallinero.setOnClickListener{
             //TODO: implementar clic en imggallinero
+            mostrarDialogRevisionEstancia("gallinero", 50)
         }
-
 
     }
 
     // ---- otros métodos
 
-    // TODO: comentar metodos
+    // metodo para convertir el timestamp en fecha controlando errores
     private fun convertirTimestamp(timestamp: Long): String {
         return try {
             val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -180,7 +132,7 @@ class EstanciasFragment : Fragment() {
         }
     }
 
-
+    // metodo para calcular el estado de la estancia (lleno/medio/vacio)
     private fun calcularEstadoEstancia(timestampUltimaRevision: Long, recurrenciaRevision: Double, tipoEstancia: String): String {
         val ahora = System.currentTimeMillis()
         val milisPorDia = 86400000 //24h * 60min * 60seg * 1000milis
@@ -200,5 +152,48 @@ class EstanciasFragment : Fragment() {
             }
         }
     }
+
+    // metodo para cambiar dinámicamente el texto del dialog, dependiendo del boton que se pulse, y cambiar asi los datos de la BD
+    private fun mostrarDialogRevisionEstancia(
+        tipoEstancia: String,
+        puntos: Int
+    ) {
+        val context = requireContext()
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registro_estancia, null)
+
+        val uid = firebaseAuth.currentUser?.uid ?: return
+        val nombreRef = firebaseDB.child("usuarios").child(uid).child("nombre_usuario")
+
+        nombreRef.get().addOnSuccessListener { snapshot ->
+            val nombreUsuario = snapshot.getValue(String::class.java) ?: "Usuario"
+
+            // Actualizamos texto dinámico
+            val txtUsuarioDialog = dialogView.findViewById<TextView>(R.id.txt_usuarioRegistroEstancia)
+            val txtMensajeDialog = dialogView.findViewById<TextView>(R.id.txt_registroEstancia)
+            txtUsuarioDialog.text = "Hola, $nombreUsuario"
+            txtMensajeDialog.text = "¿Confirmas que has revisado el $tipoEstancia?"
+
+            //abrimos dialog
+            AlertDialog.Builder(context)
+                .setTitle("Confirmar revisión")
+                .setView(dialogView)
+                .setPositiveButton("Confirmo") { _, _ ->
+                    val timestampActual = System.currentTimeMillis()
+                    val estanciaRef = firebaseDB.child("estancia").child(tipoEstancia)
+
+                    estanciaRef.child("timestamp_ultima_revision").setValue(timestampActual)
+                    estanciaRef.child("ultimo_usuario").setValue(nombreUsuario)
+
+                    Utils.sumarPuntos(uid, puntos, firebaseDB)
+
+                    //mostramos dialogo informativo (metodo de utils)
+                    Utils.mostrarDialogoInformativo(requireContext(), tipoEstancia)
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }
+    }
+
+
 
 }
