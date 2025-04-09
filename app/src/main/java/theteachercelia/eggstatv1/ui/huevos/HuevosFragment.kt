@@ -31,6 +31,9 @@ class HuevosFragment : Fragment() {
 
         //--- referencias a views o base de datos
         val imgHuevo = view.findViewById<ImageView>(R.id.img_huevo)
+        //identificamos las partes del dialog_agregar_gallina.xml
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registrar_huevo,null)
+        val spinnerElegirGallina = dialogView.findViewById<Spinner>(R.id.spinner_huevo)
 
         //bd
         val firebaseAuth = FirebaseAuth.getInstance()
@@ -41,15 +44,11 @@ class HuevosFragment : Fragment() {
 
         //al hacer clic sobre la imagen del huevo, se registra un huevo a la gallina y se suma un punto al usuario registrado
         imgHuevo.setOnClickListener {
-
             val context = requireContext()
-            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registrar_huevo,null)
-
-            //identificamos las partes del dialog_agregar_gallina.xml
-            val spinnerElegirGallina = dialogView.findViewById<Spinner>(R.id.spinner_huevo)
 
             //creamos el spinner antes de abrir el dialog
             val gallinasBD = firebaseDatabase.child("gallinas") //buscamos en la tabla gallinas
+            val usuarioBD = firebaseDatabase.child("usuarios").child(usuarioID)
             val listaGallinas = mutableListOf("Selecciona una gallina")
             val mapaGallinas = mutableMapOf<String, String>()
 
@@ -76,6 +75,7 @@ class HuevosFragment : Fragment() {
                             val gallinaSeleccionada = spinnerElegirGallina.selectedItem?.toString() ?: ""
                             val gallinaKey = mapaGallinas[gallinaSeleccionada]
 
+
                             if(gallinaKey != null){
                                 // sumar 1 huevo a la gallina seleccionada
                                 val gallinaRef = gallinasBD.child(gallinaKey)
@@ -86,7 +86,7 @@ class HuevosFragment : Fragment() {
                                 }
 
                                 // sumar 5 puntos al usuario conectado
-                                val usuarioBD = firebaseDatabase.child("usuarios").child(usuarioID)
+
                                 usuarioBD.child("puntos_usuario").get().addOnSuccessListener { puntosSnap ->
                                     val ptsUsuarioActuales = puntosSnap.getValue(Int::class.java) ?: 0
                                     usuarioBD.child("puntos_usuario").setValue(ptsUsuarioActuales + 5) // se suman 5 puntos al usuario por registrar el huevo
@@ -108,18 +108,15 @@ class HuevosFragment : Fragment() {
                                     }
                                 }
 
-
                                 Toast.makeText(context, "¡Huevo registrado con éxito!", Toast.LENGTH_SHORT).show()
                             }
                             else{
                                 Toast.makeText(context, "Error al obtener la gallina seleccionada", Toast.LENGTH_SHORT).show()
                             }
 
-
                         }
                         .setNegativeButton("Cancelar", null)
                         .show()
-
                 }
                 else{
                     Toast.makeText(context, "No hay gallinas registradas aún", Toast.LENGTH_SHORT).show()
