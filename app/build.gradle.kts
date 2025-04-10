@@ -60,6 +60,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.github.glide) // para cargar imagenes desde URL
+    implementation(libs.mpandroidchart) // para hacer gráficos
 
 }
 
