@@ -3,9 +3,11 @@ package theteachercelia.eggstatv1.utils
 import android.app.AlertDialog
 import android.content.Context
 import com.google.firebase.database.DatabaseReference
+import theteachercelia.eggstatv1.R
 
 object Utils {
 
+    //metodo para sumar puntos a los usuarios y equipos
     fun sumarPuntos(uid: String, puntos: Int, firebaseDB: DatabaseReference){
         // buscamos el nodo del usuario en firebase
         val usuarioRef = firebaseDB.child("usuarios").child(uid)
@@ -31,6 +33,7 @@ object Utils {
         }
     }
 
+    //metodo para mostrar dialogo informativo; usado en EstanciasFragment
     fun mostrarDialogoInformativo(
         context: Context,
         tipoEstancia: String
@@ -40,5 +43,17 @@ object Utils {
             .setMessage("¡¡$tipoEstancia al día!! Las gallinas son un poquito más felices ahora :)")
             .setPositiveButton("Cerrar", null)
             .show()
+    }
+
+    //metodo para obtener colores personalizados; usado en EstadisticasFragment
+    fun obtenerColoresPersonalizados(context: Context): List<Int> {
+        return listOf(
+            context.getColor(R.color.rojo),
+            context.getColor(R.color.naranja),
+            context.getColor(R.color.amarillo),
+            context.getColor(R.color.verde),
+            context.getColor(R.color.azul_verde_claro),
+            context.getColor(R.color.azul_verdoso)
+        )
     }
 }

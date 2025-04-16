@@ -52,6 +52,7 @@ class HuevosFragment : Fragment() {
             val listaGallinas = mutableListOf("Selecciona una gallina")
             val mapaGallinas = mutableMapOf<String, String>()
 
+            //TODO: IMPLEMENTAR AQUI EL METODO SUMAR PUNTOS
             gallinasBD.get().addOnSuccessListener { snapshot ->
                 if (snapshot.exists()) {
                     for (gallinaSnap in snapshot.children) {

@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- colores de paleta personalizada -->
+    <color name="rojo">#f05240</color>
+    <color name="naranja">#f46d26</color>
+    <color name="amarillo">#fbb30f</color>
+    <color name="verde">#9bc54c</color>
+    <color name="azul_verde_claro">#6dc4a9</color>
+    <color name="azul_verdoso">#489eb3</color>
 </resources>

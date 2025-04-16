@@ -45,7 +45,7 @@ class GallinasFragment : Fragment() {
             gridLayout.removeAllViews()
 
             for (gallina in listagallinas){
-                val avatarview = layoutInflater.inflate(R.layout.avatar_gallina,gridLayout,false)
+                val avatarview = layoutInflater.inflate(R.layout.dialog_avatar_gallina,gridLayout,false)
                 val imgGallina = avatarview.findViewById<ImageView>(R.id.img_Gallina)
                 val nombreGallina = avatarview.findViewById<TextView>(R.id.txt_NombreGallina)
                 val edadTexto = calcularEdad(gallina.fecha_nacimiento) //llamada a la funcion de calcular
