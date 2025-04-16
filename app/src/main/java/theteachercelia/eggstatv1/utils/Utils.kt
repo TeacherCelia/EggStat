@@ -33,6 +33,34 @@ object Utils {
         }
     }
 
+    //metodo para restar puntos, usado en ControlFragment
+    fun restarPuntos(
+        id: String,
+        puntos: Int,
+        firebaseDB: DatabaseReference,
+        tipo: String // "usuario" o "equipo"
+    ) {
+        val nodo =
+            if (tipo == "usuario")
+                "usuarios"
+            else "equipo"
+
+        val campo =
+            if (tipo == "usuario")
+                "puntos_usuario"
+            else "puntos_equipo"
+
+        val ref = firebaseDB.child(nodo).child(id)
+
+        ref.child(campo).get().addOnSuccessListener { snapshot ->
+            val puntosActuales = snapshot.getValue(Int::class.java) ?: 0
+            if (puntos <= puntosActuales) {
+                ref.child(campo).setValue(puntosActuales - puntos)
+            }
+
+        }
+    }
+
     //metodo para mostrar dialogo informativo; usado en EstanciasFragment
     fun mostrarDialogoInformativo(
         context: Context,
