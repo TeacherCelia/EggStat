@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -59,7 +61,7 @@ class ControlFragment : Fragment() {
         val btnCanjearPtsEquipo = view.findViewById<Button>(R.id.btn_canjearPtsEquipo)
         val btnCanjearPtsUsuario = view.findViewById<Button>(R.id.btn_canjearPtsUsuario)
 
-        // registramos el launcher de imagenes
+        // registramos el launcher para subir imagenes
         seleccionarImagenLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
@@ -70,6 +72,7 @@ class ControlFragment : Fragment() {
                 Toast.makeText(context, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
             }
         }
+
 
         /********************
         boton agregar usuario
@@ -173,6 +176,38 @@ class ControlFragment : Fragment() {
 
             //identificamos las partes del dialog con los id del dialog_crear_equipo
             val inputNombreEquipo = dialogView.findViewById<EditText>(R.id.edtxt_nombreEquipo)
+            val spinnerImagenes = dialogView.findViewById<Spinner>(R.id.spinner_imagenEquipo)
+            val previewImagen = dialogView.findViewById<ImageView>(R.id.preview_imagenEquipo)
+
+            //para hacer el catalogo de imagenes, buscams en la base de datos y hacemos un mapa de todas
+            val imagenesRef = firebaseDatabase.child("img_equipos")
+            val listaNombres = mutableListOf<String>()
+            val mapaUrls = mutableMapOf<String, String>()
+
+            //snap de las imagenes
+            imagenesRef.get().addOnSuccessListener { snapshot ->
+                for (imgSnap in snapshot.children) {
+                    val nombre = imgSnap.key ?: continue
+                    val url = imgSnap.getValue(String::class.java) ?: continue
+                    listaNombres.add(nombre)
+                    mapaUrls[nombre] = url
+                }
+
+                // Adapter
+                val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, listaNombres)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinnerImagenes.adapter = adapter
+
+                // Previsualización de la imagen seleccionada
+                spinnerImagenes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
+                        val nombreSeleccionado = listaNombres[pos]
+                        val urlSeleccionada = mapaUrls[nombreSeleccionado]
+                        Glide.with(context).load(urlSeleccionada).into(previewImagen) //la visualizamos con Glide
+                    }
+
+                    override fun onNothingSelected(spinner: AdapterView<*>) {}
+                }
 
             //alertdialog
             AlertDialog.Builder(context)
@@ -180,10 +215,12 @@ class ControlFragment : Fragment() {
                 .setView(dialogView)
                 .setPositiveButton("Crear") { _, _ ->
                     val equipo = inputNombreEquipo.text.toString().trim()
+                    val nombreImagen = spinnerImagenes.selectedItem?.toString()
+                    val urlImagen = mapaUrls[nombreImagen]
 
                     // si el campo está vacío
-                    if (equipo.isEmpty()) {
-                        Toast.makeText(context, "¡¡Ponle nombre al equipo!!", Toast.LENGTH_SHORT).show()
+                    if (equipo.isEmpty() || nombreImagen == null || urlImagen.isNullOrEmpty()) {
+                        Toast.makeText(context, "¡¡Rellena todos los campos!!", Toast.LENGTH_SHORT).show()
                         return@setPositiveButton
                     }
 
@@ -199,7 +236,8 @@ class ControlFragment : Fragment() {
                         } else {
                             val nuevoEquipo = Equipo(
                                 nombre_equipo = equipo,
-                                puntos_equipo = 0
+                                puntos_equipo = 0,
+                                url_imagen_equipo = urlImagen
                             )
                             equipoRef.child(nombreEquipoMinus).setValue(nuevoEquipo)
                                 .addOnSuccessListener {
@@ -487,4 +525,5 @@ class ControlFragment : Fragment() {
 
     }
 
+    }
 }

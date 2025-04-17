@@ -9,12 +9,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.LoginActivity
@@ -43,6 +45,9 @@ class HomeFragment : Fragment() {
         val txtPuntosUsuario = view.findViewById<TextView>(R.id.txt_puntosUsuario)
         val txtPuntosEquipo = view.findViewById<TextView>(R.id.txt_puntosEquipo)
         val btnLogout = view.findViewById<Button>(R.id.btnLogOut)
+        val imgEquipo = view.findViewById<ImageView>(R.id.img_equipoHome)
+        val txtNombreEquipo = view.findViewById<TextView>(R.id.txt_nombreEquipo)
+
 
         //observadores de la view
         viewModel.nombreUsuario.observe(viewLifecycleOwner) { nombre ->
@@ -55,6 +60,20 @@ class HomeFragment : Fragment() {
 
         viewModel.puntosEquipo.observe(viewLifecycleOwner) { puntosEq ->
             txtPuntosEquipo.text = "Tu equipo tiene $puntosEq puntos"
+        }
+
+        viewModel.nombreEquipo.observe(viewLifecycleOwner) { nombre ->
+            txtNombreEquipo.text = "Equipo $nombre"
+        }
+
+        //observador imagen de equipo de usuario con GLIDE
+        viewModel.urlImagenEquipo.observe(viewLifecycleOwner) { url ->
+            if (!url.isNullOrEmpty()) {
+                Glide.with(requireContext())
+                    .asGif()
+                    .load(url)
+                    .into(imgEquipo)
+            }
         }
 
         btnLogout.setOnClickListener {

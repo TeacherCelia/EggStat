@@ -17,7 +17,7 @@ class HomeViewModel : ViewModel() {
     private val firebaseDB = FirebaseDatabase.getInstance().reference
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    // visualizamos los datos del nombre de usuario, de sus puntos y los de su equipo
+    // visualizamos los datos del nombre de usuario, de sus puntos y los de su equipo + imagen
     private val _nombreUsuario = MutableLiveData<String>()
     val nombreUsuario: LiveData<String> = _nombreUsuario
 
@@ -26,6 +26,12 @@ class HomeViewModel : ViewModel() {
 
     private val _puntosEquipo = MutableLiveData<Int>()
     val puntosEquipo: LiveData<Int> = _puntosEquipo
+
+    private val _urlImagenEquipo = MutableLiveData<String>()
+    val urlImagenEquipo: LiveData<String> = _urlImagenEquipo
+
+    private val _nombreEquipo = MutableLiveData<String>()
+    val nombreEquipo: LiveData<String> = _nombreEquipo
 
     // iniciamos la carga de los datos llamando al metodo que creamos abajo
     init {
@@ -56,6 +62,8 @@ class HomeViewModel : ViewModel() {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             val equipo = snapshot.getValue(Equipo::class.java)
                             _puntosEquipo.value = equipo?.puntos_equipo ?: 0
+                            _urlImagenEquipo.value = equipo?.url_imagen_equipo ?: ""
+                            _nombreEquipo.value = equipo?.nombre_equipo ?: ""
                         }
 
                         override fun onCancelled(error: DatabaseError) {

@@ -45,31 +45,45 @@ class GallinasFragment : Fragment() {
             gridLayout.removeAllViews()
 
             for (gallina in listagallinas){
-                val avatarview = layoutInflater.inflate(R.layout.dialog_avatar_gallina,gridLayout,false)
+                val avatarview = layoutInflater.inflate(R.layout.dialog_avatar_gallina, gridLayout, false)
                 val imgGallina = avatarview.findViewById<ImageView>(R.id.img_Gallina)
                 val nombreGallina = avatarview.findViewById<TextView>(R.id.txt_NombreGallina)
                 val edadTexto = calcularEdad(gallina.fecha_nacimiento) //llamada a la funcion de calcular
+
 
                 // ponemos el nombre de gallina debajo
                 nombreGallina.text = gallina.nombre_gallina
 
                 avatarview.setOnClickListener {
+                    val dialogView = layoutInflater.inflate(R.layout.dialog_datos_gallina, null)
+                    val imgDialogGallina = dialogView.findViewById<ImageView>(R.id.img_avatarGallina)
+                    val txtDatosGallina = dialogView.findViewById<TextView>(R.id.txt_datosGallina)
+
+                    // Texto de los datos
+                    val textoInfo = "Raza: ${gallina.raza}\n" + "Edad: $edadTexto\n" +
+                            "Huevos: ${gallina.total_huevos}"
+
+                    txtDatosGallina.text = textoInfo
+
+                    //para mostrar la imagen
+                    Glide.with(this)
+                        .load(gallina.foto_url)
+                        .into(imgDialogGallina)
+
                     AlertDialog.Builder(requireContext())
                         .setTitle(gallina.nombre_gallina)
-                        .setMessage(
-                            "Raza: ${gallina.raza}\n" + "Edad: $edadTexto\n" +
-                                    "Huevos: ${gallina.total_huevos}"
-                        )
+                        .setView(dialogView)
                         .setPositiveButton("Cerrar", null)
                         .show()
                 }
 
+                //para mostrar la imagen
                 Glide.with(this)
                     .load(gallina.foto_url)
                     .into(imgGallina)
 
-
                 gridLayout.addView(avatarview)
+
             }
         }
 

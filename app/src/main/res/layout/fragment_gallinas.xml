@@ -6,16 +6,25 @@
     android:layout_gravity="center_horizontal"
     android:fillViewport="true">
 
-    <GridLayout
-        android:id="@+id/gridGallinas"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|top"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="8dp"
-        android:alignmentMode="alignMargins"
-        android:columnCount="2"
-        android:paddingStart="15dp"/>
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center">
+
+        <GridLayout
+            android:id="@+id/gridGallinas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:layout_gravity="center_horizontal"
+            android:alignmentMode="alignMargins"
+            android:useDefaultMargins="true"
+            android:clipToPadding="false"
+            android:padding="16dp"/>
+
+    </LinearLayout>
 
     <!-- android:rowCount="auto" -->
 
