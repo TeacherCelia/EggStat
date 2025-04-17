@@ -10,22 +10,22 @@
 
     <item
         android:id="@+id/navigation_gallinas"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/ico_gallina"
         android:title="@string/title_gallinas" />
 
     <item
         android:id="@+id/navigation_huevos"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/ico_huevo"
         android:title="@string/title_huevos" />
 
     <item
         android:id="@+id/navigation_estancias"
-        android:icon="@android:drawable/stat_notify_sync"
+        android:icon="@drawable/ico_estancias"
         android:title="@string/title_estancias" />
 
     <item
         android:id="@+id/navigation_estadisticas"
-        android:icon="@android:drawable/stat_notify_sync"
+        android:icon="@drawable/ico_estadisticas"
         android:title="@string/title_estadisticas" />
 
 </menu>

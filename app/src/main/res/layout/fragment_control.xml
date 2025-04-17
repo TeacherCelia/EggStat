@@ -9,37 +9,94 @@
     android:gravity="center"
     tools:context=".ui.control.ControlFragment">
 
-    <Button
-        android:id="@+id/btn_AgregarUsuario"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Crear Usuario"
-        android:layout_marginBottom="24dp" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
+        <!-- fila botones añadir, con constraintlayout para que los botones se vean bien -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="12dp">
 
-    <Button
-        android:id="@+id/btn_AgregarGallina"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Añadir Gallina"
-        android:layout_marginBottom="24dp" />
+            <ImageButton
+                android:id="@+id/btn_AgregarUsuario"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/img_add_alumna"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_AgregarGallina"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="4dp"/>
 
-    <Button
-        android:id="@+id/btn_AgregarEquipo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Añadir Equipo"
-        android:layout_marginBottom="24dp"/>
+            <ImageButton
+                android:id="@+id/btn_AgregarGallina"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/img_add_gallina"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/btn_AgregarUsuario"
+                app:layout_constraintEnd_toStartOf="@+id/btn_AgregarEquipo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="4dp"/>
 
-    <Button
-        android:id="@+id/btn_canjearPtsEquipo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Canjear puntos equipo" />
+            <ImageButton
+                android:id="@+id/btn_AgregarEquipo"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/img_add_equipo"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/btn_AgregarGallina"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:elevation="4dp"/>
 
-    <Button
-        android:id="@+id/btn_canjearPtsUsuario"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Canjear puntos usuario" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- fila botones canjear -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btn_canjearPtsEquipo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Canjear puntos Equipo"
+                android:layout_margin="4dp" />
+
+            <Button
+                android:id="@+id/btn_canjearPtsUsuario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Canjear puntos Usuario"
+                android:layout_margin="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
 </LinearLayout>

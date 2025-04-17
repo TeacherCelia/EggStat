@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -52,9 +53,9 @@ class ControlFragment : Fragment() {
         val firebaseStorage = FirebaseStorage.getInstance().reference
 
         // referencias a lasviews de los botones
-        val btnAgregarUsuario = view.findViewById<Button>(R.id.btn_AgregarUsuario)
-        val btnAgregarEquipo = view.findViewById<Button>(R.id.btn_AgregarEquipo)
-        val btnAgregarGallina = view.findViewById<Button>(R.id.btn_AgregarGallina)
+        val btnAgregarUsuario = view.findViewById<ImageButton>(R.id.btn_AgregarUsuario)
+        val btnAgregarEquipo = view.findViewById<ImageButton>(R.id.btn_AgregarEquipo)
+        val btnAgregarGallina = view.findViewById<ImageButton>(R.id.btn_AgregarGallina)
         val btnCanjearPtsEquipo = view.findViewById<Button>(R.id.btn_canjearPtsEquipo)
         val btnCanjearPtsUsuario = view.findViewById<Button>(R.id.btn_canjearPtsUsuario)
 
