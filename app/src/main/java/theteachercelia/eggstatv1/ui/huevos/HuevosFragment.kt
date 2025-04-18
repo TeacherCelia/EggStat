@@ -1,10 +1,12 @@
 package theteachercelia.eggstatv1.ui.huevos
 
+import android.animation.ObjectAnimator
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
@@ -14,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.bd.Gallina
+import theteachercelia.eggstatv1.utils.Utils
 
 class HuevosFragment : Fragment() {
 
@@ -31,9 +34,7 @@ class HuevosFragment : Fragment() {
 
         //--- referencias a views o base de datos
         val imgHuevo = view.findViewById<ImageView>(R.id.img_huevo)
-        //identificamos las partes del dialog_agregar_gallina.xml
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registrar_huevo,null)
-        val spinnerElegirGallina = dialogView.findViewById<Spinner>(R.id.spinner_huevo)
+
 
         //bd
         val firebaseAuth = FirebaseAuth.getInstance()
@@ -41,18 +42,47 @@ class HuevosFragment : Fragment() {
         val usuarioID = firebaseAuth.currentUser?.uid ?:""
 
         //---logica UI (listeners, metodos, etc)
+        // animacion efecto latido
+        //ejeY
+        val animacionEjeY = ObjectAnimator.ofFloat(imgHuevo, "scaleY", 1f, 1.1f, 1f).apply {
+            duration = 3000
+            repeatCount = ObjectAnimator.INFINITE
+            repeatMode = ObjectAnimator.REVERSE
+            interpolator = AccelerateDecelerateInterpolator()
+        }
+        animacionEjeY.start()
+
 
         //al hacer clic sobre la imagen del huevo, se registra un huevo a la gallina y se suma un punto al usuario registrado
         imgHuevo.setOnClickListener {
+            // animacion clic
+            val rotate = ObjectAnimator.ofFloat(imgHuevo, "rotation", 0f, 360f).apply {
+                duration = 500
+            }
+            val scaleUp = ObjectAnimator.ofFloat(imgHuevo, "scaleX", 1f, 1.4f, 1f).apply {
+                duration = 500
+            }
+
+            val scaleUpY = ObjectAnimator.ofFloat(imgHuevo, "scaleY", 1f, 1.4f, 1f).apply {
+                duration = 500
+            }
+
+            rotate.start()
+            scaleUp.start()
+            scaleUpY.start()
+
+            //funcionalidad clic
             val context = requireContext()
+
+            //identificamos las partes del dialog_agregar_gallina.xml dentro del dialog para evitar crash
+            val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registrar_huevo,null)
+            val spinnerElegirGallina = dialogView.findViewById<Spinner>(R.id.spinner_huevo)
 
             //creamos el spinner antes de abrir el dialog
             val gallinasBD = firebaseDatabase.child("gallinas") //buscamos en la tabla gallinas
-            val usuarioBD = firebaseDatabase.child("usuarios").child(usuarioID)
             val listaGallinas = mutableListOf("Selecciona una gallina")
             val mapaGallinas = mutableMapOf<String, String>()
 
-            //TODO: IMPLEMENTAR AQUI EL METODO SUMAR PUNTOS
             gallinasBD.get().addOnSuccessListener { snapshot ->
                 if (snapshot.exists()) {
                     for (gallinaSnap in snapshot.children) {
@@ -86,28 +116,8 @@ class HuevosFragment : Fragment() {
 
                                 }
 
-                                // sumar 5 puntos al usuario conectado
-
-                                usuarioBD.child("puntos_usuario").get().addOnSuccessListener { puntosSnap ->
-                                    val ptsUsuarioActuales = puntosSnap.getValue(Int::class.java) ?: 0
-                                    usuarioBD.child("puntos_usuario").setValue(ptsUsuarioActuales + 5) // se suman 5 puntos al usuario por registrar el huevo
-                                }
-
-                                // sumar 5 puntos al equipo del usuario conectado
-                                //1- accedemos al id del equipo_id del usuario
-                                usuarioBD.child("equipo_id").get().addOnSuccessListener { equipoSnap ->
-                                    //2- añadimos los 5 puntos al equipo
-                                    val equipoID = equipoSnap.getValue(String::class.java)
-                                    if (!equipoID.isNullOrEmpty()) {
-                                        val equipoNormalizado = equipoID.lowercase().replace("\\s+".toRegex(), "")
-                                        val equipoRef = firebaseDatabase.child("equipo").child(equipoNormalizado)
-
-                                        equipoRef.child("puntos_equipo").get().addOnSuccessListener { puntosEquipoSnap ->
-                                            val puntosEquipoActuales = puntosEquipoSnap.getValue(Int::class.java) ?: 0
-                                            equipoRef.child("puntos_equipo").setValue(puntosEquipoActuales + 5)
-                                        }
-                                    }
-                                }
+                                // sumar 5 puntos al usuario con el metodo sumarpuntos
+                                Utils.sumarPuntos(usuarioID, 5, firebaseDatabase)
 
                                 Toast.makeText(context, "¡Huevo registrado con éxito!", Toast.LENGTH_SHORT).show()
                             }

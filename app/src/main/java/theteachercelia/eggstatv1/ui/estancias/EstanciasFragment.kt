@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -46,19 +48,19 @@ class EstanciasFragment : Fragment() {
 
         // ---- referencias a views
         // bebedero
-        val imgBebedero = view.findViewById<ImageView>(R.id.img_bebedero)
+        val imgBebedero = view.findViewById<ImageButton>(R.id.img_bebedero)
         val txtEstadoBebedero = view.findViewById<TextView>(R.id.txt_estadoBebedero)
         val txtRevisionBebedero = view.findViewById<TextView>(R.id.txt_revisionBebedero)
         val txtUltimoUsuarioBebedero = view.findViewById<TextView>(R.id.txt_ultimoUsuarioBebedero)
 
         // comedero
-        val imgComedero = view.findViewById<ImageView>(R.id.img_comedero)
+        val imgComedero = view.findViewById<ImageButton>(R.id.img_comedero)
         val txtEstadoComedero = view.findViewById<TextView>(R.id.txt_estadoComedero)
         val txtRevisionComedero = view.findViewById<TextView>(R.id.txt_revisionComedero)
         val txtUltimoUsuarioComedero = view.findViewById<TextView>(R.id.txt_ultimoUsuarioComedero)
 
         // gallinero
-        val imgGallinero = view.findViewById<ImageView>(R.id.img_gallinero)
+        val imgGallinero = view.findViewById<ImageButton>(R.id.img_gallinero)
         val txtEstadoGallinero = view.findViewById<TextView>(R.id.txt_estadoGallinero)
         val txtRevisionGallinero = view.findViewById<TextView>(R.id.txt_revisionGallinero)
         val txtUltimoUsuarioGallinero = view.findViewById<TextView>(R.id.txt_ultimoUsuarioGallinero)
@@ -75,6 +77,7 @@ class EstanciasFragment : Fragment() {
                 // el dato "estado" variará dependiendo de la fecha de la ultima revisión, así que se crea metodo para ello
                 val estado = calcularEstadoEstancia(it.timestamp_ultima_revision, it.recurrencia_revision, it.tipo)
                 txtEstadoBebedero.text = "Estado: $estado"
+                txtEstadoBebedero.setTextColor(obtenerColorDesdeEstado(estado)) // para controlar el color
                 txtRevisionBebedero.text = "Última revisión: ${convertirTimestamp(it.timestamp_ultima_revision)}"
                 txtUltimoUsuarioBebedero.text = "Revisado por: ${it.ultimo_usuario}"
             }
@@ -82,6 +85,7 @@ class EstanciasFragment : Fragment() {
             comedero?.let {
                 val estado = calcularEstadoEstancia(it.timestamp_ultima_revision, it.recurrencia_revision, it.tipo)
                 txtEstadoComedero.text = "Estado: $estado"
+                txtEstadoComedero.setTextColor(obtenerColorDesdeEstado(estado))// para controlar el color
                 txtRevisionComedero.text = "Última revisión: ${convertirTimestamp(it.timestamp_ultima_revision)}"
                 txtUltimoUsuarioComedero.text = "Revisado por: ${it.ultimo_usuario}"
             }
@@ -89,6 +93,7 @@ class EstanciasFragment : Fragment() {
             gallinero?.let {
                 val estado = calcularEstadoEstancia(it.timestamp_ultima_revision, it.recurrencia_revision, it.tipo)
                 txtEstadoGallinero.text = "Estado: $estado"
+                txtEstadoGallinero.setTextColor(obtenerColorDesdeEstado(estado)) //para controlar el colr
                 txtRevisionGallinero.text = "Última revisión: ${convertirTimestamp(it.timestamp_ultima_revision)}"
                 txtUltimoUsuarioGallinero.text = "Revisado por: ${it.ultimo_usuario}"
             }
@@ -97,7 +102,7 @@ class EstanciasFragment : Fragment() {
         // ---- lógica UI (listeners, etc)
 
         imgBebedero.setOnClickListener{
-            //TODO: revisar
+
             mostrarDialogRevisionEstancia("bebedero", 10)
         }
 
@@ -105,7 +110,7 @@ class EstanciasFragment : Fragment() {
         BOTÓN COMEDERO
          *************/
         imgComedero.setOnClickListener{
-            //TODO: implementar clic en imgcomedero
+
             mostrarDialogRevisionEstancia("comedero", 10)
         }
 
@@ -113,7 +118,7 @@ class EstanciasFragment : Fragment() {
         BOTÓN GALLINERO
          *************/
         imgGallinero.setOnClickListener{
-            //TODO: implementar clic en imggallinero
+
             mostrarDialogRevisionEstancia("gallinero", 50)
         }
 
@@ -191,6 +196,15 @@ class EstanciasFragment : Fragment() {
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()
+        }
+    }
+
+    private fun obtenerColorDesdeEstado(estado: String): Int {
+        return when (estado.lowercase()) {
+            "lleno", "limpio" -> requireContext().getColor(R.color.verde)
+            "medio", "decente" -> requireContext().getColor(R.color.naranja)
+            "vacío", "sucio" -> requireContext().getColor(R.color.rojo)
+            else -> requireContext().getColor(android.R.color.black)
         }
     }
 

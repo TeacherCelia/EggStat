@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/eggstat_wallpaper">
 
     <LinearLayout
         android:id="@+id/linear_estancias"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:padding="16dp">
 
@@ -14,17 +17,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:padding="8dp">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/img_bebedero"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
-                android:src="@drawable/bebedero"
+                android:layout_marginEnd="16dp"
                 android:contentDescription="Bebedero"
-                android:layout_marginEnd="16dp" />
+                android:src="@drawable/bebedero"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="0dp"/>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -37,29 +44,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="Bebedero"
+                    android:textColor="@color/azul_verdoso"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txt_estadoBebedero"
-                    android:text="Estado: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Estado: -"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txt_revisionBebedero"
-                    android:text="Última revisión: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Última revisión: -"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txt_ultimoUsuarioBebedero"
-                    android:text="Revisado por: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Revisado por: -"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -67,17 +75,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:padding="8dp">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/img_comedero"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
-                android:src="@drawable/comedero"
+                android:layout_marginEnd="16dp"
                 android:contentDescription="Comedero"
-                android:layout_marginEnd="16dp" />
+                android:src="@drawable/comedero"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="0dp"/>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -87,32 +99,33 @@
 
                 <TextView
                     android:id="@+id/txt_tituloComedero"
-                    android:text="Comedero"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Comedero"
+                    android:textColor="@color/azul_verdoso"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txt_estadoComedero"
-                    android:text="Estado: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Estado: -"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txt_revisionComedero"
-                    android:text="Última revisión: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Última revisión: -"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txt_ultimoUsuarioComedero"
-                    android:text="Revisado por: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Revisado por: -"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
 
@@ -120,17 +133,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:padding="8dp">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/img_gallinero"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
-                android:src="@drawable/gallinero"
+                android:layout_marginEnd="16dp"
                 android:contentDescription="Gallinero"
-                android:layout_marginEnd="16dp" />
+                android:src="@drawable/gallinero"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="0dp"/>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -140,34 +157,40 @@
 
                 <TextView
                     android:id="@+id/txt_tituloGallinero"
-                    android:text="Gallinero"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Gallinero"
+                    android:textColor="@color/azul_verdoso"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txt_estadoGallinero"
-                    android:text="Estado: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Estado: -"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txt_revisionGallinero"
-                    android:text="Última revisión: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Última revisión: -"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/txt_ultimoUsuarioGallinero"
-                    android:text="Revisado por: -"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_width="match_parent"/>
+                    android:text="Revisado por: -"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
+
+        <!-- para ampliar un poco el layout para abajo -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
 
     </LinearLayout>
 </ScrollView>

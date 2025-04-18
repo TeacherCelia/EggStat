@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/eggstat_wallpaper"
     tools:context=".ui.huevos.HuevosFragment">
 
     <ImageView
@@ -12,7 +13,8 @@
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_gravity="center_horizontal|center_vertical"
-        app:srcCompat="@drawable/eggstatimg" />
+        app:srcCompat="@drawable/eggstatimg"
+        android:layout_marginTop="100dp"/>
 
     <TextView
         android:id="@+id/text_notifications"
@@ -23,5 +25,6 @@
         android:layout_marginEnd="8dp"
         android:text="Haz clic para registrar un huevo"
         android:textAlignment="center"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:textColor="@color/amarillo"/>
 </LinearLayout>

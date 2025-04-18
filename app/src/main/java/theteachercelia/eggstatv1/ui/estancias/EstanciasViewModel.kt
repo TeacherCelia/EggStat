@@ -1,14 +1,14 @@
 package theteachercelia.eggstatv1.ui.estancias
 
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.FirebaseDatabase
+import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.bd.Estancia
 
 class EstanciasViewModel : ViewModel() {
-
-    //TODO: implementar estancias viewmodel (no usar get)
 
     // instanciamos Firebase y FirebaseAuth
     private val firebaseBD = FirebaseDatabase.getInstance().reference
@@ -50,4 +50,6 @@ class EstanciasViewModel : ViewModel() {
         })
 
     }
+
+
 }
