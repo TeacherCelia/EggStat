@@ -48,12 +48,4 @@
         android:backgroundTint="#4CAF50"
         android:text="Crear cuenta profesor" />
 
-    <Button
-        android:id="@+id/btn_Pruebas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="#FF5722"
-        android:text="Entrar sin login (modo pruebas)" />
-
 </LinearLayout>

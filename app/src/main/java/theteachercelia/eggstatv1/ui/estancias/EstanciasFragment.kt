@@ -6,10 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContentProviderCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -192,7 +189,11 @@ class EstanciasFragment : Fragment() {
                     Utils.sumarPuntos(uid, puntos, firebaseDB)
 
                     //mostramos dialogo informativo (metodo de utils)
-                    Utils.mostrarDialogoInformativo(requireContext(), tipoEstancia)
+                    Utils.mostrarDialogoInformativo(
+                        requireContext(),
+                        "¡¡Acabas de revisar el $tipoEstancia!! Las gallinas son un poco más felices ahora :)",
+                        "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcarita_corazones.gif?alt=media&token=9d32281e-4b4e-4ed9-bcd8-cb963326731a"
+                    )
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()

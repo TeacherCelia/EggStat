@@ -10,7 +10,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -119,10 +118,19 @@ class HuevosFragment : Fragment() {
                                 // sumar 5 puntos al usuario con el metodo sumarpuntos
                                 Utils.sumarPuntos(usuarioID, 5, firebaseDatabase)
 
-                                Toast.makeText(context, "¡Huevo registrado con éxito!", Toast.LENGTH_SHORT).show()
+                                Utils.mostrarDialogoInformativo(
+                                    requireContext(),
+                                    "¡¡Acabas de registrar un huevo de $gallinaSeleccionada!! ¿Cómo va en las EggStadísticas?",
+                                    "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fparty.gif?alt=media&token=754a138f-51e5-4cdd-88fd-c8decf7fbfd7"
+                                )
                             }
                             else{
-                                Toast.makeText(context, "Error al obtener la gallina seleccionada", Toast.LENGTH_SHORT).show()
+                                Utils.mostrarDialogoInformativo(
+                                    requireContext(),
+                                    "Oopsie woopsie... Error al obtener la gallina seleccionada :(",
+                                    "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                                )
+
                             }
 
                         }
@@ -130,7 +138,11 @@ class HuevosFragment : Fragment() {
                         .show()
                 }
                 else{
-                    Toast.makeText(context, "No hay gallinas registradas aún", Toast.LENGTH_SHORT).show()
+                    Utils.mostrarDialogoInformativo(
+                        requireContext(),
+                        "Oopsie woopsie... ¡No hay gallinas registradas aún! :(",
+                        "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                    )
                 }
             }
 

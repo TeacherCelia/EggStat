@@ -3,31 +3,25 @@
     android:id="@+id/scrollGallinas"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center_horizontal"
-    android:fillViewport="true"
-    android:background="@drawable/eggstat_wallpaper">
+    android:background="@drawable/eggstat_wallpaper"
+    android:fillViewport="true">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_gravity="center">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <GridLayout
             android:id="@+id/gridGallinas"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:alignmentMode="alignMargins"
-            android:useDefaultMargins="true"
             android:clipToPadding="false"
-            android:padding="16dp"/>
+            android:columnCount="2"
+            android:padding="16dp"
+            android:useDefaultMargins="true"
+            android:gravity="center"/>
 
-    </LinearLayout>
-
-    <!-- android:rowCount="auto" -->
-
+    </FrameLayout>
 
 </ScrollView>

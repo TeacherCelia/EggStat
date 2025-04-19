@@ -5,30 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/edtxt_nombreEquipo"
-        android:hint="Introduce el nombre del nuevo equipo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Selecciona una imagen:"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:text="Selecciona un nombre de equipo para crear:"
+        android:textColor="@color/azul_verdoso"
+        android:textSize="20sp" />
 
     <Spinner
-        android:id="@+id/spinner_imagenEquipo"
-        android:layout_width="match_parent"
+        android:id="@+id/spinner_EquiposDisponibles"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
-
-    <ImageView
-        android:id="@+id/preview_imagenEquipo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="12dp"
-        android:scaleType="centerCrop"/>
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp" />
 
 </LinearLayout>

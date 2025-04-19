@@ -7,85 +7,86 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import android.app.AlertDialog
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import theteachercelia.eggstatv1.bd.Usuario
+import theteachercelia.eggstatv1.utils.Utils
 
 class LoginActivity : AppCompatActivity() {
 
-    // para diferenciar entre profesor (email) y alumno, hacemos esta funcion que identifica si es email
-    fun esEmail(input: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // instanciar a firebase y auth
+        // instancia a firebaseBD y auth
         val auth = FirebaseAuth.getInstance()
-        val database = FirebaseDatabase.getInstance().reference
+        val firebaseBD = FirebaseDatabase.getInstance().reference
 
-        // referenciamos los componentes
+        // referenciamos los componentes de la layout
         val emailEntradaTxt = findViewById<EditText>(R.id.edtxt_email)
         val passwordEntradaTxt = findViewById<EditText>(R.id.edtxt_pass)
+        val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
+        val olvidePass = findViewById<TextView>(R.id.txtOlvidasteContrasena)
+        val btnCrearProfesor = findViewById<Button>(R.id.btn_CrearProfesor)
 
-        // Si el usuario ya está logueado va a MainActivity
+        // si el usuario ya está logueado va a MainActivity
         if (auth.currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        val botonPruebas = findViewById<Button>(R.id.btn_Pruebas)
-        botonPruebas.visibility = View.GONE
-        botonPruebas.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
+        // -------------------------- //
+        // ----- BOTON DE LOGIN ----- //
+        // -------------------------- //
 
-        // ----- boton de login ----- //
-        val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
         botonLogin.setOnClickListener {
+            // variables para obtener los datos de los editText
             val input = emailEntradaTxt.text.toString().trim()
             val password = passwordEntradaTxt.text.toString()
 
+            // si no se rellenan todos los campos, se muestra un Toast de advertencia y no se hace nada
             if (input.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "¡¡Rellena todos los campos!!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // lógica de validación Profesor - Alumno
             val email = if (esEmail(input)) {
                 input // si se loguea con email, es profesor, no hace falta añadirle @eggstat.com al final
             } else {
                 "$input@eggstat.com" // si no es email, es alumno, se le añade @eggstat.com al final
             }
 
+            // lógica de login
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
+                    if (task.isSuccessful) { // si es correcto, el usuario se dirige a MainActivity logueado
                         startActivity(Intent(this, MainActivity::class.java))
                         finish()
-                    } else {
-                        Toast.makeText(this, "Error en login: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    } else { // si no es correcto, se muestra dialog informativo con el error
+                        Utils.mostrarDialogoInformativo(
+                            this,
+                            "Oopsie woopsie... Error en login: ${task.exception?.message}",
+                            "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                        )
                     }
                 }
         }
 
-        // ----- olvidé contraseña
+        // ----------------------------- //
+        // ----- OLVIDÉ CONTRASEÑA ----- //
+        // ----------------------------- //
 
-        val olvidePass = findViewById<TextView>(R.id.txtOlvidasteContrasena)
         olvidePass.setOnClickListener {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("¿Eres profe o alumno?")
             builder.setMessage("Selecciona tu rol para continuar")
 
-            // si elige profe
+            // si elige profe, enviamos un email al email que se indique en el edittext
             builder.setPositiveButton("Soy profe") { _, _ ->
                 val input = EditText(this)
                 input.hint = "Introduce el email con el que te registraste"
@@ -98,10 +99,20 @@ class LoginActivity : AppCompatActivity() {
                         if (email.isNotEmpty()) {
                             FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                                 .addOnSuccessListener {
-                                    Toast.makeText(this, "Correo enviado a $email", Toast.LENGTH_LONG).show()
+                                    Utils.mostrarDialogoInformativo(
+                                        this,
+                                        "¡Correo enviado a $email ! ¡Revisa tu bandeja de entrada!",
+                                        "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcohete.gif?alt=media&token=fc33791f-d852-4eb6-8de1-905d9633bae6"
+                                    )
+
                                 }
                                 .addOnFailureListener {
-                                    Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_LONG).show()
+                                    Utils.mostrarDialogoInformativo(
+                                        this,
+                                        "Oopsie woopsie... Ha habido un error: ${it.message} ",
+                                        "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                                    )
+
                                 }
                         } else {
                             Toast.makeText(this, "¡¡Escribe un email!!", Toast.LENGTH_SHORT).show()
@@ -111,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
                     .show()
             }
 
-            // si elige alumno
+            // si elige alumno, mostramos un mensaje sencillo
             builder.setNegativeButton("Soy alumno") { _, _ ->
                 AlertDialog.Builder(this)
                     .setTitle("Oh vaya...")
@@ -126,9 +137,12 @@ class LoginActivity : AppCompatActivity() {
 
         }
 
-        // ----- boton crear profesor, que abre un dialog para introducir los datos que crearán un usuario de rol profesor
-        val btnCrearProfesor = findViewById<Button>(R.id.btn_CrearProfesor)
+        // -------------------------------- //
+        // ----- BOTÓN CREAR PROFESOR ----- //
+        // -------------------------------- //
+
         btnCrearProfesor.setOnClickListener {
+            // referenciamos el dialog que se abrirá al pulsar sobre el botón
             val dialogView = layoutInflater.inflate(R.layout.dialog_crear_profesor, null) // se abre el dialog
 
             // instanciamos todos los componentes del dialog con los id de dialog_crear_profesor.xml
@@ -140,53 +154,67 @@ class LoginActivity : AppCompatActivity() {
             val inputClaveSecreta = dialogView.findViewById<EditText>(R.id.edtxt_inputClaveSecreta)
 
             // para cargar los equipos en el spinner
-            val equiposRef = database.child("equipo")
+            val equiposRef = firebaseBD.child("equipo")
             val listaEquipos = mutableListOf("Selecciona un equipo")
 
-            // cargar los equipos MENOS profesores
+            // cargar los equipos
             equiposRef.get().addOnSuccessListener { snapshot ->
-                if (snapshot.exists()){ //para añadir a "selecciona un equipo" el resto de equipos que hay en firebase "equipo"
+                if (snapshot.exists()){ //para añadir a "selecciona un equipo" el resto de equipos que hay en el nodo "equipo" de Firebase
                     for (equipoSnap in snapshot.children) {
                         val nombreEquipo = equipoSnap.child("nombre_equipo").getValue(String::class.java)
                         if (!nombreEquipo.isNullOrEmpty()) {
                             listaEquipos.add(nombreEquipo)
                         }
                     }
-                    // Adaptador y asignar al Spinner
+                    // adapter del spinner (para "traducir" los datos de la lista de equipos a datos legibles por el spinner)
                     val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, listaEquipos)
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spinnerEquipos.adapter = adapter
                 }
 
-                AlertDialog.Builder(this) //crear dialog con los siguientes atributos
+                // se crea el dialog
+                val dialog = AlertDialog.Builder(this)
                     .setTitle("Registro de profesor")
                     .setView(dialogView)
-                    .setPositiveButton("Crear") { _, _ ->
-                        val email = inputEmail.text.toString().trim() //añadimos trims para quitar espacios
+                    .setPositiveButton("Crear", null) // utilizamos "null" para poder controlar el botón manualmente más adelante
+                    .setNegativeButton("Cancelar", null)
+                    .create()
+
+                // cuando el dialogo se muestre... lógica del botón "crear"
+                dialog.setOnShowListener {
+                    val btnCrear = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    btnCrear.setOnClickListener {
+                        // variables de todos los inputs del dialog
+                        val email = inputEmail.text.toString().trim()
                         val usuario = inputUsuario.text.toString().trim()
                         val password = inputPassword.text.toString()
                         val repetirPass = inputRepetirPass.text.toString().trim()
                         val equipoSeleccionado = spinnerEquipos.selectedItem?.toString() ?: ""
                         val clave = inputClaveSecreta.text.toString()
 
-                        // nos aseguramos de que todos los campos estén rellenos
+                        // para asegurarnos de que se rellenan todos los campos
                         if (email.isEmpty() || usuario.isEmpty() || password.isEmpty() || repetirPass.isEmpty() || clave.isEmpty() || equipoSeleccionado == "Selecciona un equipo") {
                             Toast.makeText(this, "¡¡Rellena todos los campos!!", Toast.LENGTH_SHORT).show()
-                            return@setPositiveButton
+                            return@setOnClickListener
                         }
 
+                        // para asegurarnos de que las contraseñas coiniden
                         if (password != repetirPass) {
                             Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
-                            return@setPositiveButton
+                            return@setOnClickListener
                         }
 
-                        //si esta no es la clave, no se crea profesor
+                        // clave especial y única (que vendrá en el manual de usuario) para crear un profesor. Si no, se muestra un dialogo malvado
                         if (clave != "Pr0f3k3y") {
-                            Toast.makeText(this, "¡¡Clave incorrecta!! Jamás podrás adivinarla si no eres profe... ¡¡muajaja!!", Toast.LENGTH_LONG).show()
-                            return@setPositiveButton
+                            Utils.mostrarDialogoInformativo(
+                                this,
+                                "¡¡Clave incorrecta!! Jamás podrás adivinarla si no eres profe... ¡¡muajaja!!",
+                                "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fdemonio.gif?alt=media&token=f884af32-e754-4dc4-9b39-257a04476a89"
+                            )
+                            return@setOnClickListener
                         }
 
-                        // crear cuenta en firebase con esos datos
+                        // si pasa todas las verificaciones, se crea un usuario en FirebaseAuth
                         auth.createUserWithEmailAndPassword(email, password)
                             .addOnSuccessListener { result ->
                                 val uid = result.user?.uid ?: return@addOnSuccessListener
@@ -197,27 +225,49 @@ class LoginActivity : AppCompatActivity() {
                                     rol = "profesor",
                                     puntos_usuario = 0
                                 )
-                                // mensajes al añadir un usuario a la BD (success y failure)
-                                database.child("usuarios").child(uid).setValue(nuevoProfesor)
+
+                                // se añade al nodo "usuarios" de FirebaseDatabase
+                                firebaseBD.child("usuarios").child(uid).setValue(nuevoProfesor)
                                     .addOnSuccessListener {
-                                        Toast.makeText(this, "¡¡Nuevo profe añadido!!", Toast.LENGTH_SHORT).show()
+                                        // se muestra dialog informativo si tdo va bien
+                                        Utils.mostrarDialogoInformativo(
+                                            this,
+                                            "¡Nuevo profe añadido!",
+                                            "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Femoji_gafas.gif?alt=media&token=4598f3c1-c824-464c-a42f-dfad066703a0"
+                                        )
+                                        dialog.dismiss()
                                     }
                                     .addOnFailureListener {
-                                        Toast.makeText(this, "Ha habido un error al añadir el profe a la BD... :(", Toast.LENGTH_SHORT).show()
+                                        //se muestra dialogo informativo mostrando un error si no se puede añadir a la BD
+                                        Utils.mostrarDialogoInformativo(
+                                            this,
+                                            "Oopsie woopsie... Error al guardar en la base de datos :(",
+                                            "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                                        )
+
                                     }
                             }
-                            // si firebase no acepta el registro
                             .addOnFailureListener {
-                                it.printStackTrace() // pruebas para ver en el LOG el error concreto
-                                Toast.makeText(this, "Error creando usuario: ${it.message}", Toast.LENGTH_LONG).show()
-                            }
+                                // se muestra un dialogo informativo con un error si algo ha salido mal
+                                Utils.mostrarDialogoInformativo(
+                                    this,
+                                    "Oopsie woopsie... Error creando el usuario: ${it.message} ",
+                                    "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                                )
 
+                            }
                     }
-                    .setNegativeButton("Cancelar", null)
-                    .show()
+                }
+                // se muestra el dialog
+                dialog.show()
             }
 
         }
 
+    }
+
+    // función para diferenciar entre profesor (con email) y alumno
+    fun esEmail(input: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(input).matches()
     }
 }
