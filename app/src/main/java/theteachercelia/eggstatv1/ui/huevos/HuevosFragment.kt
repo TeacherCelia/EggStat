@@ -10,6 +10,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -18,6 +19,16 @@ import theteachercelia.eggstatv1.bd.Gallina
 import theteachercelia.eggstatv1.utils.Utils
 
 class HuevosFragment : Fragment() {
+
+    /*
+    Fragment que incluye un ImageView (animada con ObjectAnimator) clicable para registrar un huevo
+    a la gallina seleccionada. Al hacer clic sobre el huevo:
+    * Hace una animación de giro
+    * Aparece un Dialog con un Spinner que contiene todas las gallinas
+    * Al confirmar, se suma 1 huevo a esa gallina y 5 puntos al usuario autenticado
+    * Además, aparece un dialog divertido confirmando, y si no hubiera gallinas, aparece un mensaje
+    informativo.
+     */
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,15 +45,14 @@ class HuevosFragment : Fragment() {
         //--- referencias a views o base de datos
         val imgHuevo = view.findViewById<ImageView>(R.id.img_huevo)
 
-
-        //bd
+        // bd
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseDatabase = FirebaseDatabase.getInstance().reference
         val usuarioID = firebaseAuth.currentUser?.uid ?:""
 
         //---logica UI (listeners, metodos, etc)
-        // animacion efecto latido
-        //ejeY
+
+        // animación efecto latido (solo en el eje Y)
         val animacionEjeY = ObjectAnimator.ofFloat(imgHuevo, "scaleY", 1f, 1.1f, 1f).apply {
             duration = 3000
             repeatCount = ObjectAnimator.INFINITE
@@ -51,10 +61,9 @@ class HuevosFragment : Fragment() {
         }
         animacionEjeY.start()
 
-
         //al hacer clic sobre la imagen del huevo, se registra un huevo a la gallina y se suma un punto al usuario registrado
         imgHuevo.setOnClickListener {
-            // animacion clic
+            // animacion clic (giro huevo)
             val rotate = ObjectAnimator.ofFloat(imgHuevo, "rotation", 0f, 360f).apply {
                 duration = 500
             }
@@ -70,15 +79,15 @@ class HuevosFragment : Fragment() {
             scaleUp.start()
             scaleUpY.start()
 
-            //funcionalidad clic
+            // funcionalidad clic
             val context = requireContext()
 
-            //identificamos las partes del dialog_agregar_gallina.xml dentro del dialog para evitar crash
+            // identificamos las partes del dialog_agregar_gallina.xml dentro del dialog para evitar crash
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registrar_huevo,null)
             val spinnerElegirGallina = dialogView.findViewById<Spinner>(R.id.spinner_huevo)
 
-            //creamos el spinner antes de abrir el dialog
-            val gallinasBD = firebaseDatabase.child("gallinas") //buscamos en la tabla gallinas
+            // creamos el spinner antes de abrir el dialog
+            val gallinasBD = firebaseDatabase.child("gallinas") //buscamos en el nodo gallinas
             val listaGallinas = mutableListOf("Selecciona una gallina")
             val mapaGallinas = mutableMapOf<String, String>()
 
@@ -93,11 +102,12 @@ class HuevosFragment : Fragment() {
                             mapaGallinas[nombre] = key
                         }
                     }
+                    // adapter del spinner
                     val adapter = ArrayAdapter(context,android.R.layout.simple_spinner_item, listaGallinas)
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spinnerElegirGallina.adapter = adapter
 
-                    //alertdialog
+                    // alertdialog
                     AlertDialog.Builder(context)
                         .setTitle("Registrar huevo")
                         .setView(dialogView)
@@ -105,6 +115,11 @@ class HuevosFragment : Fragment() {
                             val gallinaSeleccionada = spinnerElegirGallina.selectedItem?.toString() ?: ""
                             val gallinaKey = mapaGallinas[gallinaSeleccionada]
 
+                            // se valida que la opción del spinner no sea "selecciona una gallina"
+                            if (gallinaSeleccionada == "Selecciona una gallina") {
+                                Toast.makeText(requireContext(), "¡¡Se te olvidó seleccionar una gallina!!", Toast.LENGTH_LONG).show()
+                                return@setPositiveButton
+                            }
 
                             if(gallinaKey != null){
                                 // sumar 1 huevo a la gallina seleccionada
@@ -146,10 +161,7 @@ class HuevosFragment : Fragment() {
                 }
             }
 
-
-
         }
     }
-
 
 }

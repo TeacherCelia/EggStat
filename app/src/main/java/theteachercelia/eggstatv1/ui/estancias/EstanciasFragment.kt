@@ -20,9 +20,18 @@ import java.util.Locale
 
 class EstanciasFragment : Fragment() {
 
+    /*
+    Con este fragment se muestra el estado de las estancias (bebedero, comedero y gallinero)
+    - Visualiza la ultima revisión de cada estancia y su estado actual (limpio/medio/sucio...)
+    - Permite registrar nuevas revisiones, actualizando Firebase y sumando puntos al usuario
+    - Obtiene los datos mediante EstanciasViewModel, que recibe datos a tiempo real
+
+    Además, utilizamos varios métodos, indicados al final de la clase
+    */
+
     private lateinit var viewModel: EstanciasViewModel
 
-    // bd
+    // firebase
     val firebaseAuth = FirebaseAuth.getInstance()
     val firebaseDB = FirebaseDatabase.getInstance().reference
 
@@ -40,8 +49,6 @@ class EstanciasFragment : Fragment() {
 
         // ---- instanciamos viewmodel
         viewModel = ViewModelProvider(this)[EstanciasViewModel::class.java]
-
-
 
         // ---- referencias a views
         // bebedero
@@ -98,22 +105,19 @@ class EstanciasFragment : Fragment() {
 
         // ---- lógica UI (listeners, etc)
 
+        // botón bebedero
         imgBebedero.setOnClickListener{
 
             mostrarDialogRevisionEstancia("bebedero", 10)
         }
 
-        /*************
-        BOTÓN COMEDERO
-         *************/
+        // botón comedero
         imgComedero.setOnClickListener{
 
             mostrarDialogRevisionEstancia("comedero", 10)
         }
 
-        /*************
-        BOTÓN GALLINERO
-         *************/
+        // botón bebedero
         imgGallinero.setOnClickListener{
 
             mostrarDialogRevisionEstancia("gallinero", 50)
@@ -123,7 +127,11 @@ class EstanciasFragment : Fragment() {
 
     // ---- otros métodos
 
-    // metodo para convertir el timestamp en fecha controlando errores
+    /*
+    -- convertirTimestamp: metodo para convertir un numero timestamp en formato milisegundos a
+    una fecha legible por el usuario. Usamos timestamp para poder mostrar la fecha de la ultima
+    revisión de la estancia
+     */
     private fun convertirTimestamp(timestamp: Long): String {
         return try {
             val formatoFecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -134,7 +142,11 @@ class EstanciasFragment : Fragment() {
         }
     }
 
-    // metodo para calcular el estado de la estancia (lleno/medio/vacio)
+    /*
+    -- calcularEstadoEstancia: calcula y devuelve el estado actial de una estancia según cuantos
+    días han pasado desde su última revisión. En la base de datos cada estancia indica cuántos
+    días tarda en tener que ser revisada (recurrencia_revision) y con ello se hace el cálculo
+     */
     private fun calcularEstadoEstancia(timestampUltimaRevision: Long, recurrenciaRevision: Double, tipoEstancia: String): String {
         val ahora = System.currentTimeMillis()
         val milisPorDia = 86400000 //24h * 60min * 60seg * 1000milis
@@ -155,7 +167,10 @@ class EstanciasFragment : Fragment() {
         }
     }
 
-    // metodo para cambiar dinámicamente el texto del dialog, dependiendo del boton que se pulse, y cambiar asi los datos de la BD
+    /*
+    -- mostrarDialogRevisionEstancia: para indicar al usuario que acaba de revisar una estancia
+    de forma divertida
+     */
     private fun mostrarDialogRevisionEstancia(
         tipoEstancia: String,
         puntos: Int
@@ -199,7 +214,10 @@ class EstanciasFragment : Fragment() {
                 .show()
         }
     }
-
+    /*
+    -- obtenerColorDesdeEstado: para cambiar el color del "estado estancia" dependiendo de si está
+    recién revisado, si está intermedoio o si necesita revisión
+     */
     private fun obtenerColorDesdeEstado(estado: String): Int {
         return when (estado.lowercase()) {
             "lleno", "limpio" -> requireContext().getColor(R.color.verde)

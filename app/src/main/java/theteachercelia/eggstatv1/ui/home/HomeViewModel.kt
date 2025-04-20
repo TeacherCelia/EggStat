@@ -12,10 +12,18 @@ import theteachercelia.eggstatv1.bd.Equipo
 import theteachercelia.eggstatv1.bd.Usuario
 
 class HomeViewModel : ViewModel() {
+    /*
+    Obtiene los datos del usuario autenticado y su equipo desde Firebase y los muestra
+    con el LiveData.
+     */
 
     // instanciamos firebase (auth y database)
     private val firebaseDB = FirebaseDatabase.getInstance().reference
     private val firebaseAuth = FirebaseAuth.getInstance()
+
+    // añadimos un livedata de error
+    private val _mensajeError = MutableLiveData<String>()
+    val mensajeError: LiveData<String> = _mensajeError
 
     // visualizamos los datos del nombre de usuario, de sus puntos y los de su equipo + imagen
     private val _nombreUsuario = MutableLiveData<String>()
@@ -67,14 +75,20 @@ class HomeViewModel : ViewModel() {
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            // TODO: añadir mensaje de error al escuchar los datos del equipo
+                            if (FirebaseAuth.getInstance().currentUser != null){
+                                _mensajeError.value = "Oopsie woopsie... Error al obtener los datos del equipo: ${error.message}"
+                            }
+
                         }
                     })
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // TODO: añadir algun mensaje de error
+                if (FirebaseAuth.getInstance().currentUser != null){
+                    _mensajeError.value = "Oopsie woopsie... Error al obtener los datos del usuario: ${error.message}"
+                }
+
             }
         })
 

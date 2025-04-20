@@ -3,16 +3,20 @@ package theteachercelia.eggstatv1.ui.estadisticas
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.PieChart
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import theteachercelia.eggstatv1.bd.Equipo
-import theteachercelia.eggstatv1.bd.Gallina
 
 class EstadisticasViewModel : ViewModel() {
+
+    /*
+    Este viewmodel es el encargado de obtener y exponer los datos de Firebase necesarios
+    para los gráficos de EstadisticasFragment.
+    Los datos los muestra en forma de "mapa":
+    - mapaGallinas: mapa con nombre_gallina -> total_huevos
+    - mapaEquipos: mapa con nombre_equipo -> puntos_equipo
+    */
 
     // instanciamos firebase (auth y database)
     private val firebaseDB = FirebaseDatabase.getInstance().reference
@@ -45,8 +49,9 @@ class EstadisticasViewModel : ViewModel() {
                     if (!nombre.isNullOrEmpty()) {
                         mapGallina[nombre] = huevos
                     }
-                    _mapaGallinas.value = mapGallina
+
                 }
+                _mapaGallinas.value = mapGallina
 
             }
             override fun onCancelled(error: DatabaseError) {}
@@ -55,23 +60,21 @@ class EstadisticasViewModel : ViewModel() {
         // cargar datos de equipos
         equiposBD.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val mapa = mutableMapOf<String, Int>()
+                val mapaEquipo = mutableMapOf<String, Int>()
                 for (equipoSnap in snapshot.children) {
                     val nombre = equipoSnap.child("nombre_equipo").getValue(String::class.java)
                     val puntos = equipoSnap.child("puntos_equipo").getValue(Int::class.java) ?: 0
-                    if (!nombre.isNullOrEmpty()) {
-                        mapa[nombre] = puntos
+                    if (!nombre.isNullOrEmpty() && nombre.lowercase() != "profesores") {
+                        mapaEquipo[nombre] = puntos
                     }
                 }
-                _mapaEquipos.value = mapa
+                _mapaEquipos.value = mapaEquipo
             }
 
             override fun onCancelled(error: DatabaseError) {}
         })
 
     }
-
-    //--- metodos extra si se necesitan
 
 
 }

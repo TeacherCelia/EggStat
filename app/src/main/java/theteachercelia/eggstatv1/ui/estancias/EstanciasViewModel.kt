@@ -1,16 +1,19 @@
 package theteachercelia.eggstatv1.ui.estancias
 
-import androidx.core.content.ContentProviderCompat.requireContext
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import theteachercelia.eggstatv1.R
+import com.google.firebase.database.ValueEventListener
+
 import theteachercelia.eggstatv1.bd.Estancia
 
 class EstanciasViewModel : ViewModel() {
 
-    // instanciamos Firebase y FirebaseAuth
+    // instanciamos Firebase
     private val firebaseBD = FirebaseDatabase.getInstance().reference
 
     // visualizamos los datos con livedata, guardando un mapa con cada estancia
@@ -27,8 +30,8 @@ class EstanciasViewModel : ViewModel() {
         val estanciasBD = firebaseBD.child("estancia") // accedemos al nodo estancia
 
         // para que cada vez que cambien los datos en Firebase, "se avise"
-        estanciasBD.addValueEventListener(object : com.google.firebase.database.ValueEventListener {
-            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) { // entregamos una "foto" del nodo
+        estanciasBD.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) { // entregamos una "foto" del nodo
                 // creamos un mapa del nodo estancia para devolver la clave (nombre) y el valor (objeto estancia)
                 val mapa = mutableMapOf<String, Estancia>()
 
@@ -44,8 +47,8 @@ class EstanciasViewModel : ViewModel() {
                 _mapaEstancias.value = mapa // actualizamos el livedata con el mapa completo
             }
 
-            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
-                //TODO: hacer logs o mostrar un toast desde el fragment
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("EstanciasVM", "Error al leer datos: ${error.message}")
             }
         })
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -24,6 +25,18 @@ import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.bd.Usuario
 
 class HomeFragment : Fragment() {
+
+    /*
+    Fragment principal que se muestra al iniciar sesión, donde se puede ver:
+    * Nombre de equipo
+    * Imagen de equipo
+    * Saludo al usuario logueado
+    * Puntos del usuario y del equipo
+    * Botón LogOut
+
+    Además, si el usuario es profesor, arriba aparece un botón de "settings" para acceder al
+    fragment control, donde realizar acciones de control de la base de datos.
+     */
 
     private lateinit var viewModel: HomeViewModel
 
@@ -48,7 +61,6 @@ class HomeFragment : Fragment() {
         val imgEquipo = view.findViewById<ImageView>(R.id.img_equipoHome)
         val txtNombreEquipo = view.findViewById<TextView>(R.id.txt_nombreEquipo)
 
-
         //observadores de la view
         viewModel.nombreUsuario.observe(viewLifecycleOwner) { nombre ->
             txtSaludo.text = "Hola, $nombre!"
@@ -66,7 +78,14 @@ class HomeFragment : Fragment() {
             txtNombreEquipo.text = "Equipo $nombre"
         }
 
-        //observador imagen de equipo de usuario con GLIDE
+        // observador mensaje de error
+        viewModel.mensajeError.observe(viewLifecycleOwner) { mensaje ->
+            if (!mensaje.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // observador imagen de equipo de usuario con GLIDE
         viewModel.urlImagenEquipo.observe(viewLifecycleOwner) { url ->
             if (!url.isNullOrEmpty()) {
                 Glide.with(requireContext())
@@ -76,13 +95,14 @@ class HomeFragment : Fragment() {
             }
         }
 
+        // botón LogOut al hacer clic
         btnLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             startActivity(Intent(requireContext(), LoginActivity::class.java))
             requireActivity().finish()
         }
 
-        // ----------- creación del menú superior de configuracion ------------- //
+        // ----------- creación del menú superior de configuración ------------- //
 
         // instanciamos firebase auth y database
         val auth = FirebaseAuth.getInstance()

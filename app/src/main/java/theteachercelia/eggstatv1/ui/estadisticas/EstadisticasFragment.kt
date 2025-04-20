@@ -16,12 +16,17 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.utils.ColorTemplate
 import theteachercelia.eggstatv1.R
 import theteachercelia.eggstatv1.utils.Utils
 
 class EstadisticasFragment : Fragment() {
 
+    /*
+    Fragment que representa las "EggStadísticas" tanto de los puntos de los equipos como de los huevos.
+    Los puntos de los equipos se muestran en un gráfico de barras
+    Los huevos totales de las gallinas se muestran en un gráfico circular
+    Los datos se obtienen mediante un EstadisticasViewModel que escucha cambios en FirebaseDatabase
+*/
 
     private lateinit var viewModel: EstadisticasViewModel
 
@@ -44,7 +49,7 @@ class EstadisticasFragment : Fragment() {
         val graficoBarras = view.findViewById<BarChart>(R.id.barChart_Equipos)
         val coloresPersonalizados = Utils.obtenerColoresPersonalizados(requireContext()) //para poner los colores personalizados a los gráficos
 
-        //observadores
+        // observadores
         viewModel.mapaGallinas.observe(viewLifecycleOwner) { mapa ->
             actualizarPieChart(mapa, graficoCircular, coloresPersonalizados)
         }
@@ -55,11 +60,12 @@ class EstadisticasFragment : Fragment() {
 
         // Lógica UI (listeners, etc)
 
-
     }
 
 
-    //otros metodos
+    // --- otros metodos
+
+    // metodo para actualizar el gráfico circular
     private fun actualizarPieChart(mapa: Map<String, Int>, pieChart: PieChart, colores: List<Int>) {
         //1-- convertir en datos de PieEntry el mapa de gallinas
         val datosGallinas = mapa.map { (nombreGallina, totalHuevos) ->
@@ -73,7 +79,7 @@ class EstadisticasFragment : Fragment() {
         dataSetGallinas.colors = colores
 
         //4-- asociar datos al gráfico
-        //tamaño numero huevos
+        // tamaño numero huevos
         val pieData = PieData(dataSetGallinas)
         pieData.setValueTextSize(16f) // tamaño del número
 
@@ -89,6 +95,7 @@ class EstadisticasFragment : Fragment() {
         pieChart.requestLayout()// refrescar gráfico
     }
 
+    // metodo para actualizar el gráfico de barras
     private fun actualizarBarChart(mapa: Map<String, Int>, barChart: BarChart, colores: List<Int>) {
         //1-- convertir en datos de BarEntry el mapa de equipos
         val datosEquipos = mapa.entries.mapIndexed { indice, (nombreEquipo, puntos) ->
@@ -99,7 +106,6 @@ class EstadisticasFragment : Fragment() {
         val dataSetEquipos = BarDataSet(datosEquipos, "Equipos")
 
         //3-- aplicar colores
-        //dataSetEquipos.setColors(*ColorTemplate.MATERIAL_COLORS)
         dataSetEquipos.colors = colores
 
         //4-- le ponemos los nombres de equipo abajo
@@ -128,7 +134,7 @@ class EstadisticasFragment : Fragment() {
 
         // refrescar grafico
         barChart.invalidate()
-        // Espacio extra abajo para que los nombres no se corten
+        // espacio extra abajo para que los nombres no se corten
         barChart.setExtraBottomOffset(40f)
         barChart.requestLayout()
     }

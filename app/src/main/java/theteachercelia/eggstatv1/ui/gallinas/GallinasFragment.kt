@@ -16,6 +16,15 @@ import theteachercelia.eggstatv1.R
 
 class GallinasFragment : Fragment() {
 
+    /*
+    Fragment encargado de mostrar un Grid con todas las gallinas registradas en Firebase
+    - Carga las gallinas desde GallinasViewModel y las muestra con imagen y nombre
+    - Al pulsar sobre una gallina, se abre un dialog con su información detallada
+
+    Además, se implementa el metodo "calcularEdad" que calcula la edad de la gallina con el dato
+    de la fecha de nacimiento proporcionado en Firebase
+    */
+
     private lateinit var viewModel: GallinasViewModel
 
     override fun onCreateView(
@@ -65,7 +74,7 @@ class GallinasFragment : Fragment() {
 
                     txtDatosGallina.text = textoInfo
 
-                    //para mostrar la imagen
+                    //para mostrar la imagen en el Fragment
                     Glide.with(this)
                         .load(gallina.foto_url)
                         .into(imgDialogGallina)
@@ -77,7 +86,7 @@ class GallinasFragment : Fragment() {
                         .show()
                 }
 
-                //para mostrar la imagen
+                //para mostrar la imagen en el Dialog
                 Glide.with(this)
                     .load(gallina.foto_url)
                     .into(imgGallina)
@@ -94,7 +103,11 @@ class GallinasFragment : Fragment() {
 
 
     }
-    // ---- lógica UI (listeners, métodos, etc...)
+
+    /*
+    Calcula la edad de la gallina a partir de su fecha de nacimiento y devuelve la edad como texto
+    ("X años") o un mensaje de error si el formato no es válido
+     */
     private fun calcularEdad(fechaNacimiento: String): String {
         return try {
             val formatoFecha = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())

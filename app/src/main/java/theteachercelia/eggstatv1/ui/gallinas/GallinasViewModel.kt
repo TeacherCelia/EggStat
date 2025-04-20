@@ -11,12 +11,20 @@ import theteachercelia.eggstatv1.bd.Gallina
 
 class GallinasViewModel : ViewModel() {
 
+    /*
+    Viewmodel que carga los datos de las gallinas obtenidos de Firebase.
+    Escucha a tiempo real el nodo "gallinas", y muestra a través de LiveData la lista de gallinas,
+    además de informar al fragmentgallinas de si hay un error al obtener los datos.
+    */
+
+    // livedata
     private val _listaGallinas = MutableLiveData<List<Gallina>>()
     val listaGallinas: LiveData<List<Gallina>> = _listaGallinas
 
+    // firebase
     private val firebaseDBref = FirebaseDatabase.getInstance().reference.child("gallinas")
 
-    //para controlar errores de visualización
+    // para controlar errores de visualización
     private val _mensajeError = MutableLiveData<String>()
     val mensajeError: LiveData<String> = _mensajeError
 
@@ -40,9 +48,6 @@ class GallinasViewModel : ViewModel() {
 
             }
 
-
         })
     }
-
-    // otros metodos
 }
