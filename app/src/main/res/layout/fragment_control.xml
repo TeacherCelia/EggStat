@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
+    android:padding="10dp"
     android:gravity="center"
     tools:context=".ui.control.ControlFragment">
 
@@ -79,24 +79,38 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:weightSum="2">
+            android:weightSum="3">
 
             <Button
                 android:id="@+id/btn_canjearPtsEquipo"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:text="Canjear puntos Equipo"
-                android:layout_margin="4dp" />
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/btn_canjearPtsUsuario"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_margin="4dp"
                 android:layout_weight="1"
                 android:text="Canjear puntos Usuario"
-                android:layout_margin="4dp"/>
+                android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/btn_resetearHuevos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/rojo"
+                android:text="Resetear huevos gallinas"
+                android:textSize="11sp" />
+
         </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

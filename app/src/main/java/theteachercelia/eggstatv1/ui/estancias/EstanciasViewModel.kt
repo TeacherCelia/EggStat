@@ -1,6 +1,7 @@
 package theteachercelia.eggstatv1.ui.estancias
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 import theteachercelia.eggstatv1.bd.Estancia
+import theteachercelia.eggstatv1.utils.Utils
 
 class EstanciasViewModel : ViewModel() {
 
@@ -19,6 +21,10 @@ class EstanciasViewModel : ViewModel() {
     // visualizamos los datos con livedata, guardando un mapa con cada estancia
     private val _mapaEstancias = MutableLiveData<Map<String, Estancia>>()
     val mapaEstancias: LiveData<Map<String, Estancia>> = _mapaEstancias //esta variable conecta con el fragment
+
+    // para controlar errores de visualización
+    private val _mensajeError = MutableLiveData<String>()
+    val mensajeError: LiveData<String> = _mensajeError
 
     init {
         cargarDatosEstancias()
@@ -48,7 +54,7 @@ class EstanciasViewModel : ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("EstanciasVM", "Error al leer datos: ${error.message}")
+                _mensajeError.value = "Error en la base de datos: ${error.message}"
             }
         })
 

@@ -38,6 +38,7 @@ class ControlFragment : Fragment() {
     - Añadir equipos
     - Canjear puntos de usuarios
     - Canjear puntos de equipo
+    - Resetear huevos
      */
 
     override fun onCreateView(
@@ -70,6 +71,7 @@ class ControlFragment : Fragment() {
         val btnAgregarGallina = view.findViewById<ImageButton>(R.id.btn_AgregarGallina)
         val btnCanjearPtsEquipo = view.findViewById<Button>(R.id.btn_canjearPtsEquipo)
         val btnCanjearPtsUsuario = view.findViewById<Button>(R.id.btn_canjearPtsUsuario)
+        val btnResetearHuevos = view.findViewById<Button>(R.id.btn_resetearHuevos)
 
         // registramos el launcher para subir imagenes
         seleccionarImagenLauncher = registerForActivityResult(
@@ -354,6 +356,8 @@ class ControlFragment : Fragment() {
 
                     // se filtran los que no existen todavía
                     listaDisponibles.addAll(mapaUrls.keys.filter { it.lowercase() !in existentes })
+                    // se pone de primera opción "selecciona un equipo")
+                    listaDisponibles.add(0, "Selecciona un equipo")
 
                     // controlamos el posible "error" de que todos los equipos ya estén creados
                     if (listaDisponibles.isEmpty()) {
@@ -375,13 +379,13 @@ class ControlFragment : Fragment() {
                         .setTitle("Crear un nuevo equipo")
                         .setView(dialogView)
                         .setPositiveButton("Crear") { _, _ ->
-                            val nombreSeleccionado = spinner.selectedItem?.toString()
+                            val nombreSeleccionado = spinner.selectedItem?.toString()!! // forzamos que no sea null (no deberia serlo)
                             val url = mapaUrls[nombreSeleccionado]
 
                             // controlamos posibles errores
 
                             // si no selecciona un equipo
-                            if (nombreSeleccionado.isNullOrEmpty()) {
+                            if (nombreSeleccionado == "Selecciona un equipo") {
                                 Toast.makeText(context, "¡¡No has seleccionado un equipo!!", Toast.LENGTH_SHORT).show()
                                 return@setPositiveButton
                             }
@@ -510,7 +514,7 @@ class ControlFragment : Fragment() {
         }
 
         // ---------------------------------------- //
-        // ----- BOTON CANJEAR PUNTOS: USUARIO ----- //
+        // ----- BOTON CANJEAR PUNTOS: USUARIO ---- //
         // ---------------------------------------- //
 
         /*
@@ -600,6 +604,47 @@ class ControlFragment : Fragment() {
                     .setNegativeButton("Cancelar", null)
                     .show()
             }
+        }
+
+        // boton resetear huevos gallinas
+
+        // -------------------------------- //
+        // ----- BOTON RESETEAR HUEVOS ---- //
+        // -------------------------------- //
+
+        /*
+        Este botón pone el atributo "huevos" de todas las gallinas del nodo a 0
+         */
+        btnResetearHuevos.setOnClickListener {
+
+            AlertDialog.Builder(context)
+                .setTitle("Resetear huevos")
+                .setMessage("¿¿Estás segura de que quieres reiniciar a 0 los huevos de TODAS las gallinas??")
+                .setPositiveButton("Sí, resetear!!") { _, _ ->
+                    val gallinasRef = FirebaseDatabase.getInstance().reference.child("gallinas")
+
+                    gallinasRef.get().addOnSuccessListener { snapshot ->
+                        // recorre todas las gallinas cambiando el valor total_huevos a 0
+                        for (gallinaSnap in snapshot.children) {
+                            gallinaSnap.ref.child("total_huevos").setValue(0)
+                        }
+                        Utils.mostrarDialogoInformativo(
+                            context,
+                            "¡¡Huevos reseteados correctamente!! ¡¡EggStadisticas comenzando de cer0!!",
+                            "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fparty.gif?alt=media&token=754a138f-51e5-4cdd-88fd-c8decf7fbfd7"
+                        )
+
+                    }.addOnFailureListener {
+                        Utils.mostrarDialogoInformativo(
+                            context,
+                            "Oopsie woopsie... Ha habido un error al resetear los huevos: ${it.message} ",
+                            "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                        )
+
+                    }
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
         }
 
     }

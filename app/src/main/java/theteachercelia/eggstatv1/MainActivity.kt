@@ -15,9 +15,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         /*
-        La MainActivity tendrá dos partes visualmente diferenciadas:
-        -- el BottomNavigationview (nav_view), siempre presente y donde podremos seleccionar dónde queremos ir
-        -- el Fragment principal (nav_host_fragment_activity_main), donde se visualizarán el resto de fragments
+        La MainActivity tiene dos partes visualmente diferenciadas:
+        - el BottomNavigationview (nav_view), siempre presente y donde podremos seleccionar dónde queremos ir
+        - el Fragment principal (nav_host_fragment_activity_main), donde se visualizarán el resto de fragments
          */
 
         // referenciamos ambos de activity_main.xml

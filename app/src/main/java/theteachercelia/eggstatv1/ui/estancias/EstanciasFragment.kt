@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -31,9 +32,6 @@ class EstanciasFragment : Fragment() {
 
     private lateinit var viewModel: EstanciasViewModel
 
-    // firebase
-    val firebaseAuth = FirebaseAuth.getInstance()
-    val firebaseDB = FirebaseDatabase.getInstance().reference
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,6 +99,11 @@ class EstanciasFragment : Fragment() {
                 txtRevisionGallinero.text = "Última revisión: ${convertirTimestamp(it.timestamp_ultima_revision)}"
                 txtUltimoUsuarioGallinero.text = "Revisado por: ${it.ultimo_usuario}"
             }
+        }
+
+        // observador del toast
+        viewModel.mensajeError.observe(viewLifecycleOwner) { mensaje ->
+            Toast.makeText(requireContext(), mensaje, Toast.LENGTH_LONG).show()
         }
 
         // ---- lógica UI (listeners, etc)
@@ -178,7 +181,9 @@ class EstanciasFragment : Fragment() {
         val context = requireContext()
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_registro_estancia, null)
 
-        val uid = firebaseAuth.currentUser?.uid ?: return
+        // referencias firebase
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val firebaseDB = FirebaseDatabase.getInstance().reference
         val nombreRef = firebaseDB.child("usuarios").child(uid).child("nombre_usuario")
 
         nombreRef.get().addOnSuccessListener { snapshot ->

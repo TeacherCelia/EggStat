@@ -17,15 +17,7 @@ class HomeViewModel : ViewModel() {
     con el LiveData.
      */
 
-    // instanciamos firebase (auth y database)
-    private val firebaseDB = FirebaseDatabase.getInstance().reference
-    private val firebaseAuth = FirebaseAuth.getInstance()
-
-    // añadimos un livedata de error
-    private val _mensajeError = MutableLiveData<String>()
-    val mensajeError: LiveData<String> = _mensajeError
-
-    // visualizamos los datos del nombre de usuario, de sus puntos y los de su equipo + imagen
+    // livedatas
     private val _nombreUsuario = MutableLiveData<String>()
     val nombreUsuario: LiveData<String> = _nombreUsuario
 
@@ -40,6 +32,14 @@ class HomeViewModel : ViewModel() {
 
     private val _nombreEquipo = MutableLiveData<String>()
     val nombreEquipo: LiveData<String> = _nombreEquipo
+
+    // añadimos un livedata de error
+    private val _mensajeError = MutableLiveData<String>()
+    val mensajeError: LiveData<String> = _mensajeError
+
+    // instanciamos firebase (auth y database)
+    private val firebaseDB = FirebaseDatabase.getInstance().reference
+    private val firebaseAuth = FirebaseAuth.getInstance()
 
     // iniciamos la carga de los datos llamando al metodo que creamos abajo
     init {

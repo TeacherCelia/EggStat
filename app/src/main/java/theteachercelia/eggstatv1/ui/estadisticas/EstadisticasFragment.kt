@@ -26,7 +26,7 @@ class EstadisticasFragment : Fragment() {
     Los puntos de los equipos se muestran en un gráfico de barras
     Los huevos totales de las gallinas se muestran en un gráfico circular
     Los datos se obtienen mediante un EstadisticasViewModel que escucha cambios en FirebaseDatabase
-*/
+    */
 
     private lateinit var viewModel: EstadisticasViewModel
 
@@ -61,7 +61,6 @@ class EstadisticasFragment : Fragment() {
         // Lógica UI (listeners, etc)
 
     }
-
 
     // --- otros metodos
 

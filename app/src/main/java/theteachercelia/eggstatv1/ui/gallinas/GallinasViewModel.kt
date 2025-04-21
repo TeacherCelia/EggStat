@@ -21,19 +21,20 @@ class GallinasViewModel : ViewModel() {
     private val _listaGallinas = MutableLiveData<List<Gallina>>()
     val listaGallinas: LiveData<List<Gallina>> = _listaGallinas
 
-    // firebase
-    private val firebaseDBref = FirebaseDatabase.getInstance().reference.child("gallinas")
-
     // para controlar errores de visualización
     private val _mensajeError = MutableLiveData<String>()
     val mensajeError: LiveData<String> = _mensajeError
+
+    // firebase
+    private val firebaseDBgallinas = FirebaseDatabase.getInstance().reference.child("gallinas")
+
 
     init {
         cargarDatosGallinas()
     }
 
     private fun cargarDatosGallinas() {
-        firebaseDBref.addValueEventListener(object : ValueEventListener {
+        firebaseDBgallinas.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val gallinas = mutableListOf<Gallina>()
                 for (gallinaSnap in snapshot.children) {

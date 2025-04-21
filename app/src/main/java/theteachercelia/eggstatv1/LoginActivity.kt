@@ -16,6 +16,15 @@ import theteachercelia.eggstatv1.bd.Usuario
 import theteachercelia.eggstatv1.utils.Utils
 
 class LoginActivity : AppCompatActivity() {
+    /*
+    Activity que aparecerá al abrir la app si no hay usuario logueado. Dispone de los siguientes
+    componentes para interactuar:
+    - EditText para introducir el email o usuario
+    - EditText de Contraseña
+    - Botón iniciar sesión
+    - Texto clicable "olvidé contraseña"
+    - Botón crear cuenta profesor (para crear una cuenta con una clave seccreta)
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +38,12 @@ class LoginActivity : AppCompatActivity() {
         val emailEntradaTxt = findViewById<EditText>(R.id.edtxt_email)
         val passwordEntradaTxt = findViewById<EditText>(R.id.edtxt_pass)
         val botonLogin = findViewById<Button>(R.id.btn_iniciarSesion)
-        val olvidePass = findViewById<TextView>(R.id.txtOlvidasteContrasena)
+        val olvidePass = findViewById<TextView>(R.id.txt_olvidePass)
         val btnCrearProfesor = findViewById<Button>(R.id.btn_CrearProfesor)
 
-        // si el usuario ya está logueado va a MainActivity
-        if (auth.currentUser != null) {
+        // si el usuario ya está logueado o no es anónimo, va a MainActivity
+        val usuarioActual = auth.currentUser
+        if (usuarioActual != null && !usuarioActual.isAnonymous) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
@@ -101,7 +111,7 @@ class LoginActivity : AppCompatActivity() {
                                 .addOnSuccessListener {
                                     Utils.mostrarDialogoInformativo(
                                         this,
-                                        "¡Correo enviado a $email ! ¡Revisa tu bandeja de entrada!",
+                                        "Si estabas registrado... ¡Un correo ha sido enviado a $email! ¡Revisa tu bandeja de entrada! Si no tienes nada, ¡es porque no estabas registrado! ¡Regístrate!",
                                         "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcohete.gif?alt=media&token=fc33791f-d852-4eb6-8de1-905d9633bae6"
                                     )
 
@@ -157,8 +167,16 @@ class LoginActivity : AppCompatActivity() {
             val equiposRef = firebaseBD.child("equipo")
             val listaEquipos = mutableListOf("Selecciona un equipo")
 
-            // cargar los equipos
-            equiposRef.get().addOnSuccessListener { snapshot ->
+            // como las reglas de Firebase están cerradas a usuarios registrados, se realiza
+            // un login anónimo para poder acceder a la base de datos
+            if (auth.currentUser == null) {
+                auth.signInAnonymously()
+            }
+
+            // cargar los equipos en el spinner
+            equiposRef.get()
+                .addOnSuccessListener { snapshot ->
+
                 if (snapshot.exists()){ //para añadir a "selecciona un equipo" el resto de equipos que hay en el nodo "equipo" de Firebase
                     for (equipoSnap in snapshot.children) {
                         val nombreEquipo = equipoSnap.child("nombre_equipo").getValue(String::class.java)
@@ -187,10 +205,10 @@ class LoginActivity : AppCompatActivity() {
                         // variables de todos los inputs del dialog
                         val email = inputEmail.text.toString().trim()
                         val usuario = inputUsuario.text.toString().trim()
-                        val password = inputPassword.text.toString()
+                        val password = inputPassword.text.toString().trim()
                         val repetirPass = inputRepetirPass.text.toString().trim()
                         val equipoSeleccionado = spinnerEquipos.selectedItem?.toString() ?: ""
-                        val clave = inputClaveSecreta.text.toString()
+                        val clave = inputClaveSecreta.text.toString().trim()
 
                         // para asegurarnos de que se rellenan todos los campos
                         if (email.isEmpty() || usuario.isEmpty() || password.isEmpty() || repetirPass.isEmpty() || clave.isEmpty() || equipoSeleccionado == "Selecciona un equipo") {
@@ -261,6 +279,14 @@ class LoginActivity : AppCompatActivity() {
                 // se muestra el dialog
                 dialog.show()
             }
+                .addOnFailureListener { error ->
+                    Utils.mostrarDialogoInformativo(
+                        this,
+                        "Oopsie woopsie... Error al acceder a la base de datos: ${error.message} ",
+                        "https://firebasestorage.googleapis.com/v0/b/eggstatdb.firebasestorage.app/o/img_recurso%2Fcalavera.gif?alt=media&token=7cc9cba8-b10d-48c4-9ad4-da0210f713cf"
+                    )
+                }
+
 
         }
 

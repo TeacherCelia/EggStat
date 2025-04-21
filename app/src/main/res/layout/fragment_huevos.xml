@@ -25,6 +25,7 @@
         android:layout_marginEnd="8dp"
         android:text="Haz clic para registrar un huevo"
         android:textAlignment="center"
+        android:textColor="@color/amarillo"
         android:textSize="20sp"
-        android:textColor="@color/amarillo"/>
+        android:textStyle="bold" />
 </LinearLayout>

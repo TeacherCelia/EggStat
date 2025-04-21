@@ -20,7 +20,7 @@
 
     <DatePicker
         android:id="@+id/dp_edadGallina"
-        android:layout_width="243dp"
+        android:layout_width="match_parent"
         android:layout_height="265dp"
         android:layout_marginTop="12dp"
         android:maxDate="today"/>
@@ -37,6 +37,7 @@
         android:id="@+id/btn_seleccionarFoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Seleccionar foto"
+        android:text="Seleccionar foto gallina"
+        android:layout_gravity="center"
         android:layout_marginTop="16dp"/>
 </LinearLayout>
