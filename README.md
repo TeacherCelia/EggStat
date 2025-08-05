@@ -1,11 +1,17 @@
 # 🐣 EggStat
 
-**Proyecto final del CFGS de Desarrollo de Aplicaciones Multiplataforma**  
-Autora: Celia Pérez Vargas
+<p align="center">
+  <strong>Proyecto final del CFGS de Desarrollo de Aplicaciones Multiplataforma</strong><br>
+  <strong>Autora:</strong> Celia Pérez Vargas
+</p>
 
 **EggStat** es una app desarrollada en **Android nativo (Kotlin)** como proyecto final de ciclo, cuyo objetivo es fomentar el cuidado de gallineros escolares mediante una experiencia educativa, gamificada e interactiva. Está pensada para ser utilizada por docentes y alumnos/as, registrando y motivando las tareas del gallinero en el entorno escolar.
 
 El tiempo para desarrollar esta app fue de **2 meses**, por lo que de momento solo cumple funcionalidades básicas, mejorables si en un futuro tengo tiempo para dedicarle :)
+
+<p align="center">
+  <img src="archivos_eggstat/Eggstat_mockup.png" alt="Mockup de Eggstat" width="600"/>
+</p>
 
 ---
 
@@ -13,11 +19,11 @@ El tiempo para desarrollar esta app fue de **2 meses**, por lo que de momento so
 
 1. [🔧 Herramientas utilizadas](#-herramientas-utilizadas)
 2. [📱 Proyecto](#-proyecto)
-    - [📐 Arquitectura de la app](#arquitectura-de-la-app)
-    - [🎥 Demo](#demo)
-    - [📄 Manual de Usuario](#manual-de-usuario)
-    - [⚙️ Instalación](#instalación)
-    - [⚠️Importante](#importante)
+    - 📐 Arquitectura de la app
+    - 🎥 Demo
+    - 📄 Manual de Usuario]
+    - ⚙️ Instalación
+    - ⚠️ Importante
 3. [📄 Licencia](#-licencia)
 
 ---
