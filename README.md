@@ -2,7 +2,10 @@
 
 <p align="center">
   <strong>Proyecto final del CFGS de Desarrollo de Aplicaciones Multiplataforma</strong><br>
-  <strong>Autora:</strong> Celia Pérez Vargas
+  <strong>Autora:</strong> Celia Pérez Vargas<br><br>
+  <a href="https://www.linkedin.com/in/theteachercelia/" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-Profile-blue?logo=linkedin&logoColor=white" alt="LinkedIn Profile"/>
+  </a>
 </p>
 
 **EggStat** es una app desarrollada en **Android nativo (Kotlin)** como proyecto final de ciclo, cuyo objetivo es fomentar el cuidado de gallineros escolares mediante una experiencia educativa, gamificada e interactiva. Está pensada para ser utilizada por docentes y alumnos/as, registrando y motivando las tareas del gallinero en el entorno escolar.
@@ -21,7 +24,7 @@ El tiempo para desarrollar esta app fue de **2 meses**, por lo que de momento so
 2. [📱 Proyecto](#-proyecto)
     - 📐 Arquitectura de la app
     - 🎥 Demo
-    - 📄 Manual de Usuario]
+    - 📄 Manual de Usuario
     - ⚙️ Instalación
     - ⚠️ Importante
 3. [📄 Licencia](#-licencia)

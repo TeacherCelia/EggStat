@@ -64,7 +64,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // lógica de validación Profesor - Alumno
+            // lógica de validación Profe - Alumno
             val email = if (esEmail(input)) {
                 input // si se loguea con email, es profesor, no hace falta añadirle @eggstat.com al final
             } else {
